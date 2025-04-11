@@ -1,3 +1,10 @@
+:root {
+    --title-size: 2rem;
+    --artist-size: 2rem;
+    --counter-size: 4rem;
+    --log-size: 1.5rem;
+}
+
 *,
 ::before,
 ::after {
@@ -7,6 +14,7 @@
 }
 
 body {
+    padding: 80px;
     font-family: "Montserrat", sans-serif;
     font-style: normal;
 
@@ -19,31 +27,26 @@ body {
 
 .title {
     font-weight: 700;
-    font-size: 1rem;
+    font-size: var(--title-size);
     color: #fff;
 }
 
 .artist {
     font-weight: 500;
-    color: #fff;
+    font-size: var(--artist-size);
     font-style: italic;
-}
-
-.conn {
-    opacity: 0;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #00ffff;
+    color: #fff;
 }
 
 #counter {
     position: relative;
-    /* width: min-content; */
+    width: min-content;
     display: flex;
     flex-flow: row nowrap;
-    gap: 4px;
-    height: 2rem;
+    padding: 0 calc(var(--counter-size) / 4);
+    margin: 0 calc(var(--counter-size) / -4);
+    gap: calc(var(--counter-size) / 6);
+    height: var(--counter-size);
     overflow-y: hidden;
 
     mask-image: linear-gradient(
@@ -63,17 +66,18 @@ body {
 
 .counter-digit {
     text-align: center;
-    margin: -0.21rem 0;
-
+    line-height: var(--counter-size);
+    flex-shrink: 0;
+    flex-grow: 0;
     font-weight: 800;
-    font-size: 32px;
+    font-size: var(--counter-size);
 
     color: #ff0;
     text-shadow:
-        0 0 3px #ff0,
-        0 0 5px #e71,
-        0 0 5px #e71,
-        #000c 0.2rem -0.1rem 0.05rem;
+        0 0 calc(var(--counter-size) / 8) #ff0,
+        0 0 calc(var(--counter-size) / 6) #e71,
+        #000c calc(var(--counter-size) / 10) calc(var(--counter-size) / -20)
+            calc(var(--counter-size) / 40);
 }
 
 #log {
@@ -92,51 +96,57 @@ body {
 }
 
 #log span {
+    height: var(--log-size);
     flex-shrink: 0;
-    height: 16px;
-    /* margin: -1px 0; */
+    line-height: var(--log-size);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: var(--log-size);
+}
+
+.perfectplus {
+    color: #fcf;
+    text-shadow:
+        0 0 calc(var(--log-size) / 8) #fcf,
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+            calc(var(--log-size) / 40);
 }
 
 .perfect {
     color: #0ff;
     text-shadow:
-        0 0 2px #0ff,
-        #000c 0.1rem 0.05rem 0.025rem;
-}
-
-.perfectplus {
-    color: #fef;
-    text-shadow:
-        0 0 2px #fef,
-        #000c 0.1rem 0.05rem 0.025rem;
+        0 0 calc(var(--log-size) / 8) #0ff,
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+            calc(var(--log-size) / 40);
 }
 
 .great {
     color: #0f0;
     text-shadow:
-        0 0 2px #0f0,
-        #000c 0.1rem 0.05rem 0.025rem;
+        0 0 calc(var(--log-size) / 8) #0f0,
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+            calc(var(--log-size) / 40);
 }
 
 .good {
     color: #ff0;
     text-shadow:
-        0 0 2px #ff0,
-        #000c 0.1rem 0.05rem 0.025rem;
+        0 0 calc(var(--log-size) / 8) #ff0,
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+            calc(var(--log-size) / 40);
 }
 
 .okay {
     color: #fa0;
     text-shadow:
-        0 0 2px #fa0,
-        #000c 0.1rem 0.05rem 0.025rem;
+        0 0 calc(var(--log-size) / 8) #fa0,
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+            calc(var(--log-size) / 40);
 }
 
 .miss {
     color: #f04;
     text-shadow:
-        0 0 2px #f04,
-        #000c 0.1rem 0.05rem 0.025rem;
+        0 0 calc(var(--log-size) / 8) #f04,
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+            calc(var(--log-size) / 40);
 }

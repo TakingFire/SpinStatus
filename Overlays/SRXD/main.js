@@ -41,21 +41,32 @@ function onMessage(e) {
 }
 
 function onClose() {
+  console.log("Disconnected");
   handleSongEvent({ title: "Disconnected", artist: "SRXD" });
   scoreCounter.setValue(0);
   log.clear();
 }
 
 function onError() {
-  console.log("Error");
+  console.log("Socket Error");
 }
 
 function handleNoteEvent(event) {
-  console.log(event["type"]);
-  // colorScore(event["color"]);
   if (event["accuracy"] != "Valid") {
     log.insert(event["accuracy"]);
   }
+
+  const [$counter] = utils.$("#counter");
+  if (["ScratchStart", "DrumStart"].includes(event["type"])) return;
+
+  // const filter = event["color"]
+  //   ? "filter: hue-rotate(-120deg)"
+  //   : "hue-rotate(140deg)";
+
+  // animate($counter, {
+  //   filter: [filter, "hue-rotate(0deg)"],
+  //   duration: 150,
+  // });
 }
 
 function handleScoreEvent(event) {
@@ -69,25 +80,16 @@ function handleSongEvent(event) {
   $title.textContent = event["title"];
   $artist.textContent = event["artist"];
 
+  const height = utils.get(":root", "--artist-size", false);
+
   animate([$title, $artist], {
-    x: [0, 5, 0],
+    x: [0, 5 * height, 0],
+    color: ["#fff", "#fcf", "#fff"],
     delay: stagger(50),
     duration: 500,
     ease: eases.outBack(1),
   });
   // $cover.src = event["cover"];
-}
-
-function colorScore(color) {
-  const [$score] = utils.$(".counter-column");
-
-  animate(".counter-column", {
-    // color: color ? ["#f0f", "#ff0"] : ["#0ff", "#ff0"],
-    filter: color
-      ? ["filter: hue-rotate(-120deg)", "hue-rotate(0deg)"]
-      : ["hue-rotate(140deg)", "hue-rotate(0deg)"],
-    duration: 150,
-  });
 }
 
 class AccuracyLog {
@@ -160,8 +162,10 @@ class AccuracyLog {
           el.classList = "perfect";
           break;
       }
+
+      const height = 16 * utils.get(":root", "--log-size", false);
       this.textAnimator.y(0, 0);
-      this.textAnimator.y(-16, 250);
+      this.textAnimator.y(-height, 250);
     });
   }
 
@@ -187,11 +191,16 @@ class CounterColumn {
       duration: 0,
     });
 
+    const height = utils.get(":root", "--counter-size", false);
+    const maxHeight = height * 10;
+
     this.valueAnimator = createAnimatable(this, {
       value: 250,
       ease: eases.outBack(0.5),
       onUpdate: () =>
-        this.elementAnimator.y((((-2 * this.value) % 20) - 20) % 20),
+        this.elementAnimator.y(
+          (((-height * this.value) % maxHeight) - maxHeight) % maxHeight,
+        ),
     });
   }
 
