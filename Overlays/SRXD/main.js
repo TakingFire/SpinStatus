@@ -1,0 +1,228 @@
+const { animate, createAnimatable, utils, eases, stagger } = anime;
+
+function connect() {
+  const ws = new WebSocket("ws://localhost:38304");
+  ws.onopen = onOpen;
+  ws.onmessage = onMessage;
+  ws.onclose = onClose;
+  ws.onerror = onError;
+  return ws;
+}
+
+function onOpen() {
+  console.log("Connected");
+  handleSongEvent({ title: "Main Menu", artist: "SRXD" });
+}
+
+function onMessage(e) {
+  const event = JSON.parse(e.data);
+
+  switch (event["type"]) {
+    case "noteEvent":
+      handleNoteEvent(event["status"]);
+      break;
+    case "scoreEvent":
+      handleScoreEvent(event["status"]);
+      break;
+    case "trackStart":
+      handleSongEvent(event["status"]);
+      scoreCounter.setValue(0);
+      log.clear();
+      break;
+    case "trackEnd":
+      handleSongEvent({ title: "Main Menu", artist: "SRXD" });
+      scoreCounter.setValue(0);
+      log.clear();
+      break;
+    default:
+      console.log(event);
+      break;
+  }
+}
+
+function onClose() {
+  handleSongEvent({ title: "Disconnected", artist: "SRXD" });
+  scoreCounter.setValue(0);
+  log.clear();
+}
+
+function onError() {
+  console.log("Error");
+}
+
+function handleNoteEvent(event) {
+  console.log(event["type"]);
+  // colorScore(event["color"]);
+  if (event["accuracy"] != "Valid") {
+    log.insert(event["accuracy"]);
+  }
+}
+
+function handleScoreEvent(event) {
+  scoreCounter.setValue(event["score"]);
+}
+
+function handleSongEvent(event) {
+  const [$title] = utils.$(".title");
+  const [$artist] = utils.$(".artist");
+  const [$cover] = utils.$(".cover");
+  $title.textContent = event["title"];
+  $artist.textContent = event["artist"];
+
+  animate([$title, $artist], {
+    x: [0, 5, 0],
+    delay: stagger(50),
+    duration: 500,
+    ease: eases.outBack(1),
+  });
+  // $cover.src = event["cover"];
+}
+
+function colorScore(color) {
+  const [$score] = utils.$(".counter-column");
+
+  animate(".counter-column", {
+    // color: color ? ["#f0f", "#ff0"] : ["#0ff", "#ff0"],
+    filter: color
+      ? ["filter: hue-rotate(-120deg)", "hue-rotate(0deg)"]
+      : ["hue-rotate(140deg)", "hue-rotate(0deg)"],
+    duration: 150,
+  });
+}
+
+class AccuracyLog {
+  constructor(length) {
+    this.length = length;
+    this.log = [];
+    this.elements = [];
+
+    const [$log] = utils.$("#log");
+    for (let i = 0; i < length + 1; i++) {
+      const el = document.createElement("span");
+      $log.appendChild(el);
+      this.elements.unshift(el);
+    }
+    utils.set($log, {
+      maxHeight:
+        this.elements[0].getBoundingClientRect().height *
+        (this.elements.length - 1),
+    });
+
+    this.textAnimator = createAnimatable("#log span", {
+      y: { unit: "px" },
+      duration: 250,
+      ease: eases.outBack(2),
+    });
+  }
+
+  insert(text) {
+    if (this.log.length > this.length) this.log.pop();
+    this.log.unshift(text);
+    this.update();
+  }
+
+  update() {
+    this.elements.forEach((el, i) => {
+      switch (this.log[i]) {
+        case "PerfectPlus":
+          el.textContent = "PERFECT+";
+          el.className = "perfectplus";
+          break;
+        case "Perfect":
+        case "EarlyPerfect":
+          el.textContent = "PERFECT";
+          el.className = "perfect";
+          break;
+        case "Great":
+        case "EarlyGreat":
+          el.textContent = "GREAT";
+          el.className = "great";
+          break;
+        case "Good":
+        case "EarlyGood":
+          el.textContent = "GOOD";
+          el.className = "good";
+          break;
+        case "Okay":
+          el.textContent = "LATE";
+          el.className = "okay";
+          break;
+        case "EarlyOkay":
+          el.textContent = "EARLY";
+          el.className = "okay";
+          break;
+        case "Failed":
+          el.textContent = "MISS";
+          el.className = "miss";
+          break;
+        default:
+          el.textContent = this.log[i];
+          el.classList = "perfect";
+          break;
+      }
+      this.textAnimator.y(0, 0);
+      this.textAnimator.y(-16, 250);
+    });
+  }
+
+  clear() {
+    for (let i = 0; i < this.length; i++) {
+      setTimeout(() => {
+        this.insert("");
+      }, i * 50);
+    }
+  }
+}
+
+class CounterColumn {
+  constructor() {
+    this.value = 0;
+    const [$template] = utils.$("#counter-column-template");
+    const [$counter] = utils.$("#counter");
+    this.element = $template.content.cloneNode(true).firstElementChild;
+    $counter.appendChild(this.element);
+
+    this.elementAnimator = createAnimatable(this.element, {
+      y: { unit: "rem" },
+      duration: 0,
+    });
+
+    this.valueAnimator = createAnimatable(this, {
+      value: 250,
+      ease: eases.outBack(0.5),
+      onUpdate: () =>
+        this.elementAnimator.y((((-2 * this.value) % 20) - 20) % 20),
+    });
+  }
+
+  setValue(value) {
+    this.valueAnimator.value(value);
+  }
+}
+
+class Counter {
+  constructor(length) {
+    this.value = 0;
+    this.length = length;
+    this.columns = [];
+
+    for (let i = 0; i < length; i++) {
+      this.columns.push(new CounterColumn());
+    }
+  }
+
+  setValue(value) {
+    this.columns.forEach((e, i) => {
+      e.setValue(Math.floor(value / Math.pow(10, this.length - (i + 1))));
+    });
+    this.value = value;
+  }
+
+  addValue(value) {
+    this.setValue(this.value + value);
+  }
+}
+
+const ws = connect();
+const scoreCounter = new Counter(5);
+const log = new AccuracyLog(4);

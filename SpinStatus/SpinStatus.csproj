@@ -1,0 +1,41 @@
+<Project Sdk = "Microsoft.NET.Sdk">
+
+<PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Deterministic>false</Deterministic>
+</PropertyGroup>
+
+
+<PropertyGroup>
+<TargetFramework>netstandard2.1</TargetFramework>
+<AssemblyName>SpinStatus</AssemblyName>
+<Product>SpinStatus</Product>
+<Version>0.1.0</Version>
+<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+<LangVersion>latest</LangVersion>
+<RestoreAdditionalProjectSources>
+    https://api.nuget.org/v3/index.json;
+    https://nuget.bepinex.dev/v3/index.json;
+    https://nuget.samboy.dev/v3/index.json
+</RestoreAdditionalProjectSources>
+<RootNamespace>xyz.bacur</RootNamespace>
+</PropertyGroup>
+
+<ItemGroup>
+    <PackageReference Include = "BepInEx.Analyzers" Version = "1.*" PrivateAssets = "all" />
+    <PackageReference Include = "BepInEx.Core" Version = "5.*" />
+    <PackageReference Include = "BepInEx.PluginInfoProps" Version = "2.*" />
+    <PackageReference Include = "UnityEngine.Modules" Version = "6000.0.37" IncludeAssets = "compile" />
+</ItemGroup>
+
+<ItemGroup>
+    <Reference Include = "lib/Assembly-CSharp.dll" />
+    <Reference Include = "lib/SSD.PlayerServiceManager.dll" />
+    <Reference Include = "lib/SSD.Game.dll" />
+    <Reference Include = "lib/Spin.Game.TrackPlaybackSystem.dll" />
+</ItemGroup>
+
+<ItemGroup Condition = "'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include = "Microsoft.NETFramework.ReferenceAssemblies" Version = "1.0.2" PrivateAssets = "all" />
+</ItemGroup>
+</Project>

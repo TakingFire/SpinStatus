@@ -1,0 +1,142 @@
+*,
+::before,
+::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+
+    display: flex;
+    flex-flow: column nowrap;
+
+    background-color: #30343f;
+    /* zoom: 200%; */
+}
+
+.title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.artist {
+    font-weight: 500;
+    color: #fff;
+    font-style: italic;
+}
+
+.conn {
+    opacity: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #00ffff;
+}
+
+#counter {
+    position: relative;
+    /* width: min-content; */
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 4px;
+    height: 2rem;
+    overflow-y: hidden;
+
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        white 10%,
+        white 90%,
+        transparent 100%
+    );
+}
+
+.counter-column {
+    display: flex;
+    width: min-content;
+    flex-flow: column nowrap;
+}
+
+.counter-digit {
+    text-align: center;
+    margin: -0.21rem 0;
+
+    font-weight: 800;
+    font-size: 32px;
+
+    color: #ff0;
+    text-shadow:
+        0 0 3px #ff0,
+        0 0 5px #e71,
+        0 0 5px #e71,
+        #000c 0.2rem -0.1rem 0.05rem;
+}
+
+#log {
+    display: flex;
+    flex-flow: column nowrap;
+    max-height: 0;
+    overflow: hidden;
+
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        white 25%,
+        white 95%,
+        transparent 100%
+    );
+}
+
+#log span {
+    flex-shrink: 0;
+    height: 16px;
+    /* margin: -1px 0; */
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.perfect {
+    color: #0ff;
+    text-shadow:
+        0 0 2px #0ff,
+        #000c 0.1rem 0.05rem 0.025rem;
+}
+
+.perfectplus {
+    color: #fef;
+    text-shadow:
+        0 0 2px #fef,
+        #000c 0.1rem 0.05rem 0.025rem;
+}
+
+.great {
+    color: #0f0;
+    text-shadow:
+        0 0 2px #0f0,
+        #000c 0.1rem 0.05rem 0.025rem;
+}
+
+.good {
+    color: #ff0;
+    text-shadow:
+        0 0 2px #ff0,
+        #000c 0.1rem 0.05rem 0.025rem;
+}
+
+.okay {
+    color: #fa0;
+    text-shadow:
+        0 0 2px #fa0,
+        #000c 0.1rem 0.05rem 0.025rem;
+}
+
+.miss {
+    color: #f04;
+    text-shadow:
+        0 0 2px #f04,
+        #000c 0.1rem 0.05rem 0.025rem;
+}
