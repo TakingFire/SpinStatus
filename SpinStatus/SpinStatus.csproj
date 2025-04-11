@@ -29,10 +29,18 @@
 </ItemGroup>
 
 <ItemGroup>
-    <Reference Include = "lib/Assembly-CSharp.dll" />
-    <Reference Include = "lib/SSD.PlayerServiceManager.dll" />
-    <Reference Include = "lib/SSD.Game.dll" />
-    <Reference Include = "lib/Spin.Game.TrackPlaybackSystem.dll" />
+    <Reference Include="Assembly-CSharp" Publicize="true">
+        <HintPath>..\..\SpinRhythm_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SSD.PlayerServiceManager">
+        <HintPath>..\..\SpinRhythm_Data\Managed\SSD.PlayerServiceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="SSD.Game">
+        <HintPath>..\..\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Spin.Game.TrackPlaybackSystem">
+        <HintPath>..\..\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
+    </Reference>
 </ItemGroup>
 
 <ItemGroup Condition = "'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
