@@ -1,7 +1,7 @@
 :root {
     --title-size: 2rem;
     --artist-size: 2rem;
-    --counter-size: 4rem;
+    --counter-size: 3rem;
     --log-size: 1.5rem;
 }
 
@@ -45,7 +45,7 @@ body {
     flex-flow: row nowrap;
     padding: 0 calc(var(--counter-size) / 4);
     margin: 0 calc(var(--counter-size) / -4);
-    gap: calc(var(--counter-size) / 6);
+    gap: calc(var(--counter-size) / 8);
     height: var(--counter-size);
     overflow-y: hidden;
 
@@ -78,6 +78,22 @@ body {
         0 0 calc(var(--counter-size) / 6) #e71,
         #000c calc(var(--counter-size) / 10) calc(var(--counter-size) / -20)
             calc(var(--counter-size) / 40);
+}
+
+.combo {
+    font-weight: 600;
+    font-size: calc(var(--counter-size) / 2.5);
+    /* color: #fff; */
+    color: #ff0;
+    text-shadow:
+        0 0 calc(var(--counter-size) / 16) #ff0,
+        0 0 calc(var(--counter-size) / 12) #e71,
+        #000c calc(var(--counter-size) / 20) calc(var(--counter-size) / -40)
+            calc(var(--counter-size) / 40);
+}
+
+#combo {
+    letter-spacing: calc(var(--counter-size) / 20);
 }
 
 #log {

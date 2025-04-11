@@ -31,6 +31,7 @@ function onMessage(e) {
       break;
     case "trackEnd":
       handleSongEvent({ title: "Main Menu", artist: "SRXD" });
+      utils.$("#combo")[0].textContent = "000";
       scoreCounter.setValue(0);
       log.clear();
       break;
@@ -52,12 +53,12 @@ function onError() {
 }
 
 function handleNoteEvent(event) {
-  if (event["accuracy"] != "Valid") {
+  if (!["Valid", "Pending"].includes(event["accuracy"])) {
     log.insert(event["accuracy"]);
   }
 
-  const [$counter] = utils.$("#counter");
-  if (["ScratchStart", "DrumStart"].includes(event["type"])) return;
+  // const [$counter] = utils.$("#counter");
+  // if (["ScratchStart", "DrumStart"].includes(event["type"])) return;
 
   // const filter = event["color"]
   //   ? "filter: hue-rotate(-120deg)"
@@ -71,6 +72,7 @@ function handleNoteEvent(event) {
 
 function handleScoreEvent(event) {
   scoreCounter.setValue(event["score"]);
+  utils.$("#combo")[0].textContent = String(event["combo"]).padStart(3, "0");
 }
 
 function handleSongEvent(event) {
@@ -83,7 +85,7 @@ function handleSongEvent(event) {
   const height = utils.get(":root", "--artist-size", false);
 
   animate([$title, $artist], {
-    x: [0, 5 * height, 0],
+    x: [0, 5 * height, -2 * height, 0],
     color: ["#fff", "#fcf", "#fff"],
     delay: stagger(50),
     duration: 500,
@@ -156,6 +158,16 @@ class AccuracyLog {
         case "Failed":
           el.textContent = "MISS";
           el.className = "miss";
+          animate(".combo", {
+            x: [0, -5, 5, 0],
+            filter: [
+              "hue-rotate(-60deg) saturate(2)",
+              "hue-rotate(-60deg) saturate(2)",
+              "hue-rotate(0deg) saturate(1)",
+            ],
+            ease: eases.outBack(1),
+            duration: 250,
+          });
           break;
         default:
           el.textContent = this.log[i];
