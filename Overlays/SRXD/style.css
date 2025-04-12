@@ -14,10 +14,13 @@
 }
 
 body {
+    overflow: hidden;
     padding-left: 1rem;
     padding-top: 0.5rem;
     font-family: "Montserrat", sans-serif;
     font-style: normal;
+
+    padding: 40px;
 
     display: flex;
     flex-flow: column nowrap;
