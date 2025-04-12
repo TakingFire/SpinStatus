@@ -3,6 +3,8 @@
 This plugin exposes real-time game information for Spin Rhythm XD using a local WebSocket, inspired by [HttpSiraStatus](https://github.com/denpadokei/HttpSiraStatus/tree/master). \
 Also included in this repository are example [Overlays](Overlays/) that demonstrate the plugin.
 
+> <img src="https://github.com/user-attachments/assets/8cd40e31-6470-4de4-9ee5-fef71a6b3159" height="250" alt="Overlay Demo gif">
+
 ## Installing
 
 1. This plugin requires [BepInEx](https://github.com/BepInEx/BepInEx). Follow [these instructions](https://steamcommunity.com/sharedfiles/filedetails/?id=3339937862) to install BepInEx for Spin Rhythm.
