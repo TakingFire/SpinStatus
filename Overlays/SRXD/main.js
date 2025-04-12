@@ -247,3 +247,12 @@ class Counter {
 const ws = connect();
 const scoreCounter = new Counter(5);
 const log = new AccuracyLog(4);
+
+animate("body > *", {
+  y: ["1rem", "0"],
+  opacity: [0, 1],
+  delay: stagger(100),
+  duration: 1000,
+  ease: eases.outBack(2),
+  onComplete: (self) => utils.cleanInlineStyles(self),
+});

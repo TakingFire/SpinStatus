@@ -28,12 +28,12 @@ namespace SpinStatus.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(TrackGameplayLogic), nameof(TrackGameplayLogic.UpdateNoteState))]
-        private static void Postfix(this PlayState playState, int noteIndex, TempNoteState __state)
+        private static void Postfix(this PlayState playState, int noteIndex, ref TempNoteState __state)
         {
             ScoreState scoreState = playState.scoreState;
             ref NoteState noteState = ref scoreState.GetNoteState(noteIndex);
 
-            // if (playState.playStateStatus <= PlayStateStatus.Preparing) { return; }
+            if (playState.playStateStatus <= PlayStateStatus.Preparing) { return; }
 
             PlayableNoteData nodeData = playState.noteData;
             Note note = nodeData.GetNote(noteIndex);
@@ -50,7 +50,6 @@ namespace SpinStatus.Patches
                     currentTime - previousScoreEventTime > scoreEventInterval)
                 {
                     previousScoreEventTime = currentTime;
-                    // Plugin.Logger.LogInfo($"{currentTime}: Score Updated");
 
                     var scoreEventJSON = new JSONObject();
 
@@ -80,7 +79,6 @@ namespace SpinStatus.Patches
             noteJSON["color"] = (int)note.colorIndex;
             noteJSON["lane"] = (int)note.column;
 
-            Plugin.Logger.LogInfo($"{noteIndex}: Color={note.colorIndex}");
             Server.ServerBehavior.SendMessage(noteEventJSON);
         }
     }
