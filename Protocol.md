@@ -30,9 +30,9 @@ Every message sent by the server follows this format.\
 Type | Status | Description
 ---- | ------ | -----------
 `"hello"` | | Sent on initial connection.
-`"noteEvent"` | [NoteEvent](protocol.md#noteevent-object) | Sent when a note is hit or missed.
-`"scoreEvent"` | [ScoreEvent](protocol.md#scoreevent-object) | Sent when the score changes. Usually coincides with a `noteEvent`, but updates continuously during sustained notes.
-`"trackStart"`<br>`"trackEnd"` | [TrackEvent](protocol.md#trackevent-object) | Sent when a track starts and ends.
+`"noteEvent"` | [NoteEvent](Protocol.md#noteevent-object) | Sent when a note is hit or missed.
+`"scoreEvent"` | [ScoreEvent](Protocol.md#scoreevent-object) | Sent when the score changes. Usually coincides with a `noteEvent`, but updates continuously during sustained notes.
+`"trackStart"`<br>`"trackEnd"` | [TrackEvent](Protocol.md#trackevent-object) | Sent when a track starts and ends.
 
 ### NoteEvent Object
 
