@@ -9,15 +9,18 @@
     />
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/animejs@4.0.0/lib/anime.iife.min.js"></script>
+    <script type="text/javascript" src="config.js"></script>
     <script defer type="text/javascript" src="main.js"></script>
   </head>
   <body>
-    <img class="cover" src="" />
-    <span class="title">Connecting...</span>
-    <span class="artist">SRXD</span>
-    <div id="counter"></div>
-    <span class="combo">COMBO: <span id="combo">000</span></span>
-    <div id="log"></div>
+    <div id="overlay">
+      <img class="cover" src="" />
+      <span class="title">Connecting...</span>
+      <span class="artist">SRXD</span>
+      <div id="counter"></div>
+      <span class="combo">COMBO: <span id="combo">000</span></span>
+      <div id="log"></div>
+    </div>
 
     <template id="counter-column-template">
       <div class="counter-column">

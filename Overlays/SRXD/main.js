@@ -12,6 +12,9 @@ function connect() {
 function onOpen() {
   console.log("Connected");
   handleSongEvent({ title: "Main Menu", artist: "SRXD" });
+  if (!globalConfig.showOverlayInMenu) {
+    Overlay.hideOverlay();
+  }
 }
 
 function onMessage(e) {
@@ -25,15 +28,10 @@ function onMessage(e) {
       handleScoreEvent(event["status"]);
       break;
     case "trackStart":
-      handleSongEvent(event["status"]);
-      scoreCounter.setValue(0);
-      log.clear();
+      handleTrackStart(event["status"]);
       break;
     case "trackEnd":
-      handleSongEvent({ title: "Main Menu", artist: "SRXD" });
-      utils.$("#combo")[0].textContent = "000";
-      scoreCounter.setValue(0);
-      log.clear();
+      handTrackEnd(event);
       break;
     default:
       console.log(event);
@@ -45,7 +43,8 @@ function onClose() {
   console.log("Disconnected");
   handleSongEvent({ title: "Disconnected", artist: "SRXD" });
   scoreCounter.setValue(0);
-  log.clear();
+  accuracyLog.clear();
+  Overlay.showOverlay();
 }
 
 function onError() {
@@ -53,29 +52,55 @@ function onError() {
 }
 
 function handleNoteEvent(event) {
-  if (!["Valid", "Pending"].includes(event["accuracy"])) {
-    log.insert(event["accuracy"]);
+  if (
+    globalConfig.showAccuracyLog &&
+    !["Valid", "Pending"].includes(event["accuracy"])
+  ) {
+    accuracyLog.insert(event["accuracy"]);
   }
 
-  // const [$counter] = utils.$("#counter");
-  // if (["ScratchStart", "DrumStart"].includes(event["type"])) return;
+  if (globalConfig.showComboCounter && event["type"] == "Failed") {
+    animate(".combo", {
+      x: [0, -5, 5, 0],
+      filter: [
+        "hue-rotate(-60deg) saturate(2)",
+        "hue-rotate(-60deg) saturate(2)",
+        "hue-rotate(0deg) saturate(1)",
+      ],
+      ease: eases.outBack(1),
+      duration: 250,
+    });
+  }
 
-  // const filter = event["color"]
-  //   ? "filter: hue-rotate(-120deg)"
-  //   : "hue-rotate(140deg)";
+  if (globalConfig.showScoreCounter && globalConfig.flashScoreCounter) {
+    const [$counter] = utils.$("#counter");
+    if (["ScratchStart", "DrumStart"].includes(event["type"])) return;
 
-  // animate($counter, {
-  //   filter: [filter, "hue-rotate(0deg)"],
-  //   duration: 150,
-  // });
+    const filter = event["color"]
+      ? "filter: hue-rotate(-120deg)"
+      : "hue-rotate(140deg)";
+
+    animate($counter, {
+      filter: [filter, "hue-rotate(0deg)"],
+      duration: 250,
+    });
+  }
 }
 
 function handleScoreEvent(event) {
-  scoreCounter.setValue(event["score"]);
-  utils.$("#combo")[0].textContent = String(event["combo"]).padStart(3, "0");
+  if (globalConfig.showScoreCounter) {
+    scoreCounter.setValue(event["score"]);
+  }
+  if (globalConfig.showComboCounter) {
+    utils.$("#combo")[0].textContent = String(event["combo"]).padStart(3, "0");
+  }
 }
 
 function handleSongEvent(event) {
+  if (!globalConfig.showSongTitle && !globalConfig.showSongArtist) {
+    return;
+  }
+
   const [$title] = utils.$(".title");
   const [$artist] = utils.$(".artist");
   const [$cover] = utils.$(".cover");
@@ -91,8 +116,79 @@ function handleSongEvent(event) {
     duration: 500,
     ease: eases.outBack(1),
   });
-  // $cover.src = event["cover"];
 }
+
+function handleTrackStart(event) {
+  handleSongEvent(event);
+  scoreCounter.setValue(0);
+  accuracyLog.clear();
+
+  if (!globalConfig.showOverlayInMenu) {
+    Overlay.showOverlay();
+  }
+}
+
+function handTrackEnd(event) {
+  utils.$("#combo")[0].textContent = "000";
+  scoreCounter.setValue(0);
+  accuracyLog.clear();
+
+  if (globalConfig.showOverlayInMenu) {
+    handleSongEvent({ title: "Main Menu", artist: "SRXD" });
+  } else {
+    Overlay.hideOverlay();
+  }
+}
+
+const Overlay = {
+  animation: undefined,
+  isVisible: true,
+
+  showOverlay: function () {
+    if (this.isVisible) return;
+    if (this.animation) {
+      this.animation.cancel();
+    }
+
+    this.isVisible = true;
+
+    this.animation = animate("#overlay", {
+      opacity: [0, 1],
+      duration: 500,
+    });
+
+    this.animation = animate("#overlay > *", {
+      y: ["1rem", "0"],
+      opacity: [0, 1],
+      delay: stagger(100, { start: 500 }),
+      duration: 1000,
+      ease: eases.outBack(2),
+    });
+  },
+
+  hideOverlay: function () {
+    if (!this.isVisible) return;
+    if (this.animation) {
+      this.animation.cancel();
+    }
+
+    this.isVisible = false;
+
+    this.animation = animate("#overlay > *", {
+      y: ["0", "1rem"],
+      opacity: [1, 0],
+      delay: stagger(100, { reversed: true }),
+      duration: 1000,
+      ease: eases.outBack(2),
+    });
+
+    this.animation = animate("#overlay", {
+      opacity: [1, 0],
+      duration: 500,
+      delay: 500,
+    });
+  },
+};
 
 class AccuracyLog {
   constructor(length) {
@@ -158,16 +254,6 @@ class AccuracyLog {
         case "Failed":
           el.textContent = "MISS";
           el.className = "miss";
-          animate(".combo", {
-            x: [0, -5, 5, 0],
-            filter: [
-              "hue-rotate(-60deg) saturate(2)",
-              "hue-rotate(-60deg) saturate(2)",
-              "hue-rotate(0deg) saturate(1)",
-            ],
-            ease: eases.outBack(1),
-            duration: 250,
-          });
           break;
         default:
           el.textContent = this.log[i];
@@ -244,15 +330,22 @@ class Counter {
   }
 }
 
+if (!globalConfig.showSongTitle) utils.set(".title", { display: "none" });
+if (!globalConfig.showSongArtist) utils.set(".artist", { display: "none" });
+if (!globalConfig.showScoreCounter) utils.set("#counter", { display: "none" });
+if (!globalConfig.showComboCounter) utils.set(".combo", { display: "none" });
+if (!globalConfig.showAccuracyLog) utils.set("#log", { display: "none" });
+
+if (globalConfig.clipLongSongText) {
+  utils.set(".title, .artist", {
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+  });
+}
+
 const ws = connect();
 const scoreCounter = new Counter(5);
-const log = new AccuracyLog(4);
+const accuracyLog = new AccuracyLog(4);
 
-animate("body > *", {
-  y: ["1rem", "0"],
-  opacity: [0, 1],
-  delay: stagger(100),
-  duration: 1000,
-  ease: eases.outBack(2),
-  onComplete: (self) => utils.cleanInlineStyles(self),
-});
+Overlay.showOverlay();
