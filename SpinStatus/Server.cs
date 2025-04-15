@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using SimpleJSON;
-using UnityEngine;
 
 namespace SpinStatus.Server
 {
@@ -29,7 +28,6 @@ namespace SpinStatus.Server
 
         public static void SendMessage(JSONObject json) {
             foreach (var instance in _instances) {
-                // Debug.Log($"Sent message to {instance.ID}");
                 instance.SendAsync(json.ToString(), null);
             }
         }

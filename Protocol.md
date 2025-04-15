@@ -32,7 +32,8 @@ Type | Status | Description
 `"hello"` | | Sent on initial connection.
 `"noteEvent"` | [NoteEvent](Protocol.md#noteevent-object) | Sent when a note is hit or missed.
 `"scoreEvent"` | [ScoreEvent](Protocol.md#scoreevent-object) | Sent when the score changes. Usually coincides with a `noteEvent`, but updates continuously during sustained notes.
-`"trackStart"`<br>`"trackEnd"` | [TrackEvent](Protocol.md#trackevent-object) | Sent when a track starts and ends.
+`"trackStart"` | [TrackEvent](Protocol.md#trackevent-object) | Sent when a track starts.
+`"trackEnd"` | | Sent when a track ends.
 
 ### NoteEvent Object
 
@@ -46,6 +47,7 @@ Type | Status | Description
 
     // Performance
     "accuracy": String,
+    "timing"  : Number,
   }
 ```
 
@@ -53,9 +55,13 @@ Type | Status | Description
 
 ```js
   {
-    "score"   : Number,
-    "combo"   : Number,
-    "maxCombo": Number,
+    "score"     : Number,
+    "combo"     : Number,
+    "maxCombo"  : Number,
+    "fullCombo" : String,
+    "health"    : Number,
+    "maxHealth" : Number,
+    "multiplier": Number,
   }
 ```
 
@@ -63,8 +69,13 @@ Type | Status | Description
 
 ```js
   {
-    "title" : String,
-    "artist": String,
-    "feat"  : String,
+    "title"   : String,
+    "subTitle": String
+    "artist"  : String,
+    "feat"    : String,
+    "charter" : String,
+
+    "difficulty": String,
+    "isCustom"  : Boolean,
   }
 ```

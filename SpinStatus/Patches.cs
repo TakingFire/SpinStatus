@@ -1,5 +1,4 @@
 using HarmonyLib;
-using UnityEngine;
 using SimpleJSON;
 
 namespace SpinStatus.Patches
@@ -14,6 +13,13 @@ namespace SpinStatus.Patches
 
         private static float previousScoreEventTime = 0;
         private const float scoreEventInterval = 0.125F;
+
+        private enum NoteEndType {
+            DrumEnd = 2,
+            SpinRightEnd = 4,
+            SpinLeftEnd = 8,
+            HoldEnd = 16,
+        }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TrackGameplayLogic), nameof(TrackGameplayLogic.UpdateNoteState))]
@@ -58,6 +64,10 @@ namespace SpinStatus.Patches
                     scoreJSON["score"] = scoreState.TotalScore;
                     scoreJSON["combo"] = scoreState.combo;
                     scoreJSON["maxCombo"] = scoreState.maxCombo;
+                    scoreJSON["fullCombo"] = scoreState.fullComboState.ToString();
+                    scoreJSON["health"] = playState.health;
+                    scoreJSON["maxHealth"] = playState.MaxHealth;
+                    scoreJSON["multiplier"] = playState.multiplier;
 
                     Server.ServerBehavior.SendMessage(scoreEventJSON);
                 }
@@ -69,13 +79,20 @@ namespace SpinStatus.Patches
                 note.NoteType == NoteType.Checkpoint ||
                 note.NoteType == NoteType.TutorialStart) { return; }
 
+            string noteType;
+
+            if (becameDoneWith && isSustained) noteType = ((NoteEndType)note.NoteType).ToString();
+            else if ((!isSustained && note.NoteType == NoteType.DrumStart)) noteType = "Drum";
+            else noteType = note.NoteType.ToString();
+
             var noteEventJSON = new JSONObject();
 
             noteEventJSON["type"] = "noteEvent";
             var noteJSON = noteEventJSON["status"].AsObject;
             noteJSON["index"] = noteIndex;
             noteJSON["accuracy"] = noteState.timingAccuracy.ToString();
-            noteJSON["type"] = note.NoteType.ToString();
+            noteJSON["timing"] = noteState.timingOffset ?? 0;
+            noteJSON["type"] = noteType;
             noteJSON["color"] = (int)note.colorIndex;
             noteJSON["lane"] = (int)note.column;
 
@@ -89,18 +106,24 @@ namespace SpinStatus.Patches
         [HarmonyPatch(typeof(Track), nameof(Track.PlayTrack))]
         private static void StartTrack()
         {
-            TrackInfo trackInfo = Track.PlayHandle.loadedData.segments[0].trackInfo;
-            TrackInfoMetadata trackMeta = new TrackInfoMetadata(trackInfo);
-
-            Texture2D image = trackInfo.albumArtReference.GetLoadedAsset();
+            PlayableTrackDataHandle playHandle = Track.PlayHandle;
+            if (!playHandle.Setup.IsSetupForSingleTrackSegment) {
+                Plugin.Logger.LogError("Cannot read track metadata");
+                return;
+            }
+            TrackDataSegment trackData = playHandle.Setup.TrackDataSegmentForSingleTrackDataSetup;
+            TrackInfoMetadata trackMeta = trackData.GetTrackInfoMetadata();
 
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackStart";
             var trackJSON = eventJSON["status"].AsObject;
             trackJSON["title"] = trackMeta.title;
+            trackJSON["subTitle"] = trackMeta.subtitle;
             trackJSON["artist"] = trackMeta.artistName;
             trackJSON["feat"] = trackMeta.featArtists;
-            // trackJSON["cover"] = System.Convert.ToBase64String(image.EncodeToPNG());
+            trackJSON["charter"] = trackMeta.charter;
+            trackJSON["difficulty"] = trackData.difficulty.ToString();
+            trackJSON["isCustom"] = trackMeta.isCustom;
 
             Server.ServerBehavior.SendMessage(eventJSON);
         }
