@@ -1,7 +1,9 @@
 const { animate, createAnimatable, utils, eases, stagger } = anime;
 
+let hasReconnected = false;
+
 function connect() {
-  const ws = new WebSocket("ws://localhost:38304");
+  const ws = new WebSocket("ws://localhost:" + globalConfig.webSocketPort);
   ws.onopen = onOpen;
   ws.onmessage = onMessage;
   ws.onclose = onClose;
@@ -15,6 +17,7 @@ function onOpen() {
   if (!globalConfig.showOverlayInMenu) {
     Overlay.hideOverlay();
   }
+  hasReconnected = false;
 }
 
 function onMessage(e) {
@@ -45,6 +48,11 @@ function onClose() {
   scoreCounter.setValue(0);
   accuracyLog.clear();
   Overlay.showOverlay();
+
+  if (!hasReconnected) {
+    hasReconnected = true;
+    connect();
+  }
 }
 
 function onError() {
@@ -60,7 +68,7 @@ function handleNoteEvent(event) {
   }
 
   if (globalConfig.showComboCounter && event["type"] == "Failed") {
-    animate(".combo", {
+    animate("#combo", {
       x: [0, -5, 5, 0],
       filter: [
         "hue-rotate(-60deg) saturate(2)",
@@ -74,7 +82,7 @@ function handleNoteEvent(event) {
 
   if (globalConfig.showScoreCounter && globalConfig.flashScoreCounter) {
     const [$counter] = utils.$("#counter");
-    if (["ScratchStart", "DrumStart"].includes(event["type"])) return;
+    if (["ScratchStart", "DrumStart", "Drum"].includes(event["type"])) return;
 
     const filter = event["color"]
       ? "filter: hue-rotate(-120deg)"
@@ -92,7 +100,24 @@ function handleScoreEvent(event) {
     scoreCounter.setValue(event["score"]);
   }
   if (globalConfig.showComboCounter) {
-    utils.$("#combo")[0].textContent = String(event["combo"]).padStart(3, "0");
+    const combo = String(event["combo"]).padStart(3, "0");
+    utils.$("#combo-number")[0].textContent = combo;
+
+    [$comboType] = utils.$("#combo-type");
+
+    switch (event["fullCombo"]) {
+      case "PerfectPlus":
+      case "Perfect":
+        $comboType.textContent = "PFC";
+        $comboType.className = "perfect";
+        break;
+      case "None":
+        $comboType.textContent = "";
+        break;
+      default:
+        $comboType.textContent = "FC";
+        $comboType.className = "great";
+    }
   }
 }
 
@@ -101,9 +126,8 @@ function handleSongEvent(event) {
     return;
   }
 
-  const [$title] = utils.$(".title");
-  const [$artist] = utils.$(".artist");
-  const [$cover] = utils.$(".cover");
+  const [$title] = utils.$("#title");
+  const [$artist] = utils.$("#artist");
   $title.textContent = event["title"];
   $artist.textContent = event["artist"];
 
@@ -129,7 +153,8 @@ function handleTrackStart(event) {
 }
 
 function handTrackEnd(event) {
-  utils.$("#combo")[0].textContent = "000";
+  utils.$("#combo-number")[0].textContent = "000";
+  utils.$("#combo-type")[0].textContent = "";
   scoreCounter.setValue(0);
   accuracyLog.clear();
 
@@ -330,14 +355,14 @@ class Counter {
   }
 }
 
-if (!globalConfig.showSongTitle) utils.set(".title", { display: "none" });
-if (!globalConfig.showSongArtist) utils.set(".artist", { display: "none" });
+if (!globalConfig.showSongTitle) utils.set("#title", { display: "none" });
+if (!globalConfig.showSongArtist) utils.set("#artist", { display: "none" });
 if (!globalConfig.showScoreCounter) utils.set("#counter", { display: "none" });
-if (!globalConfig.showComboCounter) utils.set(".combo", { display: "none" });
+if (!globalConfig.showComboCounter) utils.set("#combo", { display: "none" });
 if (!globalConfig.showAccuracyLog) utils.set("#log", { display: "none" });
 
 if (globalConfig.clipLongSongText) {
-  utils.set(".title, .artist", {
+  utils.set("#title, #artist", {
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",

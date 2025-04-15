@@ -19,7 +19,8 @@ body {
 }
 
 #overlay {
-    padding: 0.5rem 1rem;
+    padding: 1rem;
+    padding-top: 0.5rem;
     font-family: "Montserrat", sans-serif;
     font-style: normal;
 
@@ -38,13 +39,13 @@ body {
     /* zoom: 200%; */
 }
 
-.title {
+#title {
     font-weight: 700;
     font-size: var(--title-size);
     color: #fff;
 }
 
-.artist {
+#artist {
     font-weight: 500;
     font-size: var(--artist-size);
     font-style: italic;
@@ -93,7 +94,7 @@ body {
             calc(var(--counter-size) / 40);
 }
 
-.combo {
+#combo {
     font-weight: 600;
     font-size: calc(var(--counter-size) / 2.5);
     /* color: #fff; */
@@ -105,8 +106,9 @@ body {
             calc(var(--counter-size) / 40);
 }
 
-#combo {
-    letter-spacing: calc(var(--counter-size) / 20);
+#combo-number {
+    letter-spacing: calc(var(--counter-size) / 40);
+    font-variant-numeric: tabular-nums;
 }
 
 #log {
@@ -136,7 +138,7 @@ body {
     color: #fcf;
     text-shadow:
         0 0 calc(var(--log-size) / 8) #fcf,
-        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / -20)
             calc(var(--log-size) / 40);
 }
 
@@ -144,7 +146,7 @@ body {
     color: #0ff;
     text-shadow:
         0 0 calc(var(--log-size) / 8) #0ff,
-        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / -20)
             calc(var(--log-size) / 40);
 }
 
@@ -152,7 +154,7 @@ body {
     color: #0f0;
     text-shadow:
         0 0 calc(var(--log-size) / 8) #0f0,
-        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / -20)
             calc(var(--log-size) / 40);
 }
 
@@ -160,7 +162,7 @@ body {
     color: #ff0;
     text-shadow:
         0 0 calc(var(--log-size) / 8) #ff0,
-        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / -20)
             calc(var(--log-size) / 40);
 }
 
@@ -168,7 +170,7 @@ body {
     color: #fa0;
     text-shadow:
         0 0 calc(var(--log-size) / 8) #fa0,
-        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / -20)
             calc(var(--log-size) / 40);
 }
 
@@ -176,6 +178,6 @@ body {
     color: #f04;
     text-shadow:
         0 0 calc(var(--log-size) / 8) #f04,
-        #000c calc(var(--log-size) / 10) calc(var(--log-size) / 20)
+        #000c calc(var(--log-size) / 10) calc(var(--log-size) / -20)
             calc(var(--log-size) / 40);
 }
