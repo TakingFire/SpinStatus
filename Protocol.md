@@ -30,52 +30,155 @@ Every message sent by the server follows this format.\
 Type | Status | Description
 ---- | ------ | -----------
 `"hello"` | | Sent on initial connection.
-`"noteEvent"` | [NoteEvent](Protocol.md#noteevent-object) | Sent when a note is hit or missed.
-`"scoreEvent"` | [ScoreEvent](Protocol.md#scoreevent-object) | Sent when the score changes. Usually coincides with a `noteEvent`, but updates continuously during sustained notes.
-`"trackStart"` | [TrackEvent](Protocol.md#trackevent-object) | Sent when a track starts.
-`"trackEnd"` | | Sent when a track ends.
+`"noteEvent"` | [NoteStatus](Protocol.md#notestatus-object) | Sent when a note is hit or missed.
+`"scoreEvent"` | [ScoreStatus](Protocol.md#scorestatus-object) | Sent when the score changes. Usually coincides with a `noteEvent`, but updates continuously during sustained notes.
+`"trackStart"` | [TrackStatus](Protocol.md#trackstatus-object)<br>[PlayerStatus](Protocol.md#playerstatus-object) | Sent when a track starts.
+`"trackEnd"` | | Sent when a track ends (returns to song list).
+`"trackComplete"`<br>`"trackFail"` | | Sent when a track ends (shows results screen).
+`"trackPause"`<br>`"trackResume"` | | Sent when the game is paused or resumed.
 
-### NoteEvent Object
+### NoteStatus Object
 
 ```js
-  {
-    // Note info
-    "index": Number, // Note identifier
-    "lane" : Number, // Note lane
-    "type" : String, // Note type
-    "color": Number, // 0 (Red) | 1 (Blue)
+{
+  "index": Number, // Note identifier
+  "lane" : Number, // Note lane
+  "type" : String, // Note type
+  "color": Number, // 0 (Red) | 1 (Blue)
 
-    // Performance
-    "accuracy": String,
-    "timing"  : Number,
-  }
+  "accuracy": String,
+  "timing"  : Number,
+}
 ```
 
-### ScoreEvent Object
+<details>
+  <summary><strong>Note Types</strong></summary>
 
 ```js
-  {
-    "score"     : Number,
-    "combo"     : Number,
-    "maxCombo"  : Number,
-    "fullCombo" : String,
-    "health"    : Number,
-    "maxHealth" : Number,
-    "multiplier": Number,
-  }
+[
+  "Tap",
+  "Match",
+  "Drum",
+  "DrumStart",
+  "DrumEnd",
+  "HoldStart",
+  "HoldEnd",
+  "SpinLeftStart"
+  "SpinLeftEnd"
+  "SpinRightStart",
+  "SpinRightEnd",
+  "ScratchStart",
+  "ScratchEnd",
+]
 ```
 
-### TrackEvent Object
+</details>
+
+<details>
+  <summary><strong>Accuracy Values</strong></summary>
 
 ```js
-  {
-    "title"   : String,
-    "subTitle": String
-    "artist"  : String,
-    "feat"    : String,
-    "charter" : String,
+[
+  "Valid", // Match, Spin
+  "PerfectPlus",
+  "Perfect",
+  "EarlyPerfect",
+  "Great",
+  "EarlyGreat",
+  "Good",
+  "EarlyGood",
+  "Okay",
+  "EarlyOkay",
+  "Failed",
+]
+```
 
-    "difficulty": String,
-    "isCustom"  : Boolean,
-  }
+</details>
+
+### ScoreStatus Object
+
+```js
+{
+  "score"     : Number,
+  "combo"     : Number,
+  "maxCombo"  : Number,
+  "fullCombo" : String,
+  "health"    : Number,
+  "maxHealth" : Number,
+  "multiplier": Number,
+}
+```
+
+<details>
+  <summary><strong>Combo Values</strong></summary>
+
+```js
+[
+  "PerfectPlus",
+  "Perfect",
+  "Great",
+  "Good",
+  "Okay",
+  "None",
+]
+```
+
+</details>
+
+### TrackStatus Object
+
+```js
+{
+  "title"   : String,
+  "subTitle": String
+  "artist"  : String,
+  "feat"    : String,
+  "charter" : String,
+
+  "startTime": Number,
+  "endTime"  : Number,
+
+  "difficulty": String,
+  "isCustom"  : Boolean,
+}
+```
+
+<details>
+  <summary><strong>Difficulty Values</strong></summary>
+
+```js
+[
+  "RemiXD",
+  "XD",
+  "Expert",
+  "Hard",
+  "Normal",
+  "Easy",
+]
+```
+
+</details>
+
+### PlayerStatus Object
+
+```js
+{
+  "palette": NotePalette
+}
+```
+
+#### NotePalette Object
+
+All values in formatted hex, i.e. `"#RRGGBB"`
+
+```js
+{
+ 	"NoteA"    : String,
+	"NoteB"    : String,
+	"Beat"     : String,
+	"SpinLeft" : String,
+	"SpinRight": String,
+	"Scratch"  : String,
+	"Ancillary": String, // Highlights
+}
 ```
