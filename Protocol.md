@@ -173,12 +173,12 @@ All values in formatted hex, i.e. `"#RRGGBB"`
 
 ```js
 {
- 	"NoteA"    : String,
-	"NoteB"    : String,
-	"Beat"     : String,
-	"SpinLeft" : String,
-	"SpinRight": String,
-	"Scratch"  : String,
-	"Ancillary": String, // Highlights
+  "NoteA"    : String,
+  "NoteB"    : String,
+  "Beat"     : String,
+  "SpinLeft" : String,
+  "SpinRight": String,
+  "Scratch"  : String,
+  "Ancillary": String, // Highlights
 }
 ```

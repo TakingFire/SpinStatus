@@ -12,7 +12,7 @@ public class Plugin : BaseUnityPlugin
 {
     public const string Guid = "xyz.bacur.plugins.spinstatus";
     public const string Name = "SpinStatus";
-    public const string Version = "0.2.0";
+    public const string Version = "0.3.0";
 
 
     internal static new ManualLogSource Logger;
