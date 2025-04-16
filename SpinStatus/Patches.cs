@@ -1,5 +1,6 @@
 using HarmonyLib;
 using SimpleJSON;
+using UnityEngine;
 
 namespace SpinStatus.Patches
 {
@@ -101,18 +102,19 @@ namespace SpinStatus.Patches
     }
 
     [HarmonyPatch]
-    internal static class SceneEventHandler {
+    internal static class SceneEventHandler
+    {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.PlayTrack))]
         private static void StartTrack()
         {
-            PlayableTrackDataHandle playHandle = Track.PlayHandle;
-            if (!playHandle.Setup.IsSetupForSingleTrackSegment) {
-                Plugin.Logger.LogError("Cannot read track metadata");
-                return;
-            }
-            TrackDataSegment trackData = playHandle.Setup.TrackDataSegmentForSingleTrackDataSetup;
-            TrackInfoMetadata trackMeta = trackData.GetTrackInfoMetadata();
+            PlayState playState = Track.PlayStates[0];
+            PlayableTrackData trackData = playState.trackData;
+
+            TrackDataSegment trackDataSegment = trackData.GetFirstSegment();
+            TrackInfoMetadata trackMeta = trackDataSegment.GetTrackInfoMetadata();
+
+            playState.trackData.GetFirstSegment();
 
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackStart";
@@ -122,8 +124,20 @@ namespace SpinStatus.Patches
             trackJSON["artist"] = trackMeta.artistName;
             trackJSON["feat"] = trackMeta.featArtists;
             trackJSON["charter"] = trackMeta.charter;
-            trackJSON["difficulty"] = trackData.difficulty.ToString();
+            trackJSON["difficulty"] = playState.CurrentDifficulty.ToString();
             trackJSON["isCustom"] = trackMeta.isCustom;
+            trackJSON["startTime"] = playState.startTrackTime;
+            trackJSON["endTime"] = trackData.GameplayEndTick.ToSecondsFloat();
+
+            var colorJSON = trackJSON["palette"].AsObject;
+
+            ColorSystem colorSystem = GameSystemSingleton<ColorSystem, ColorSystemSettings>.Instance;
+            ColorSystem.NoteColorProfile colorProfile = colorSystem.GetNoteColorProfile(playState.GetNoteColorProfile());
+
+            for (var i = 1; i < 8; i++) {
+                Color color = colorProfile.GetBlender((NoteColorType)i).colorBlend.baseColor;
+                colorJSON[((NoteColorType)i).ToString()] = "#" + ColorUtility.ToHtmlStringRGB(color);
+            }
 
             Server.ServerBehavior.SendMessage(eventJSON);
         }
@@ -135,6 +149,42 @@ namespace SpinStatus.Patches
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackEnd";
             var trackJSON = eventJSON["status"].AsObject;
+            Server.ServerBehavior.SendMessage(eventJSON);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Track), nameof(Track.HandlePauseGame))]
+        private static void PauseTrack()
+        {
+            var eventJSON = new JSONObject();
+            eventJSON["type"] = "trackPause";
+            Server.ServerBehavior.SendMessage(eventJSON);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Track), nameof(Track.HandleUnpauseGame))]
+        private static void ResumeTrack()
+        {
+            var eventJSON = new JSONObject();
+            eventJSON["type"] = "trackResume";
+            Server.ServerBehavior.SendMessage(eventJSON);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Track), nameof(Track.CompleteSong))]
+        private static void CompleteTrack()
+        {
+            var eventJSON = new JSONObject();
+            eventJSON["type"] = "trackComplete";
+            Server.ServerBehavior.SendMessage(eventJSON);
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Track), nameof(Track.FailSong))]
+        private static void FailTrack()
+        {
+            var eventJSON = new JSONObject();
+            eventJSON["type"] = "trackFail";
             Server.ServerBehavior.SendMessage(eventJSON);
         }
     }
