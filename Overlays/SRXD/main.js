@@ -62,7 +62,8 @@ function onError() {
 function handleNoteEvent(event) {
   if (
     globalConfig.showAccuracyLog &&
-    !["Valid", "Pending"].includes(event["accuracy"])
+    !["Valid", "Pending"].includes(event["accuracy"]) &&
+    !["HoldEnd", "DrumEnd"].includes(event["type"])
   ) {
     accuracyLog.insert(event["accuracy"]);
   }
