@@ -7,6 +7,7 @@ const globalConfig = {
   showComboCounter: true,
   showAccuracyLog: true,
 
+  showOverlayPaused: true,
   showOverlayInMenu: true,
   flashScoreCounter: false,
   clipLongSongText: true,

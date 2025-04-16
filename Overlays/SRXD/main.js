@@ -36,6 +36,14 @@ function onMessage(e) {
     case "trackEnd":
       handTrackEnd(event);
       break;
+    case "trackPause":
+    case "trackComplete":
+    case "trackFail":
+      if (!globalConfig.showOverlayPaused) Overlay.hideOverlay();
+      break;
+    case "trackResume":
+      if (!globalConfig.showOverlayPaused) Overlay.showOverlay();
+      break;
     default:
       console.log(event);
       break;
@@ -180,14 +188,14 @@ const Overlay = {
 
     this.animation = animate("#overlay", {
       opacity: [0, 1],
-      duration: 500,
+      duration: 250,
     });
 
     this.animation = animate("#overlay > *", {
       y: ["1rem", "0"],
       opacity: [0, 1],
-      delay: stagger(100, { start: 500 }),
-      duration: 1000,
+      delay: stagger(75, { start: 250 }),
+      duration: 800,
       ease: eases.outBack(2),
     });
   },
@@ -203,15 +211,15 @@ const Overlay = {
     this.animation = animate("#overlay > *", {
       y: ["0", "1rem"],
       opacity: [1, 0],
-      delay: stagger(100, { reversed: true }),
-      duration: 1000,
+      delay: stagger(75, { reversed: true }),
+      duration: 800,
       ease: eases.outBack(2),
     });
 
     this.animation = animate("#overlay", {
       opacity: [1, 0],
       duration: 500,
-      delay: 500,
+      delay: 400,
     });
   },
 };
