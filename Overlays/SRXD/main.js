@@ -137,8 +137,10 @@ function handleSongEvent(event) {
 
   const [$title] = utils.$("#title");
   const [$artist] = utils.$("#artist");
+  const [$charter] = utils.$("#charter");
   $title.textContent = event["title"];
   $artist.textContent = event["artist"];
+  $charter.textContent = event["charter"] ? "Chart: " + event["charter"] : "";
 
   const height = utils.get(":root", "--artist-size", false);
 
@@ -366,12 +368,13 @@ class Counter {
 
 if (!globalConfig.showSongTitle) utils.set("#title", { display: "none" });
 if (!globalConfig.showSongArtist) utils.set("#artist", { display: "none" });
+if (!globalConfig.showCharter) utils.set("#charter", { display: "none" });
 if (!globalConfig.showScoreCounter) utils.set("#counter", { display: "none" });
 if (!globalConfig.showComboCounter) utils.set("#combo", { display: "none" });
 if (!globalConfig.showAccuracyLog) utils.set("#log", { display: "none" });
 
 if (globalConfig.clipLongSongText) {
-  utils.set("#title, #artist", {
+  utils.set("#title, #artist, #charter", {
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",

@@ -1,6 +1,7 @@
 :root {
     --title-size: 2rem;
     --artist-size: 1.75rem;
+    --charter-size: 1.25rem;
     --counter-size: 3rem;
     --log-size: 1.5rem;
 }
@@ -50,6 +51,14 @@ body {
     font-size: var(--artist-size);
     font-style: italic;
     color: #fff;
+}
+
+#charter {
+    margin: 0.2rem 0;
+    font-weight: 500;
+    font-size: var(--charter-size);
+    font-style: italic;
+    color: #fffc;
 }
 
 #counter {

@@ -3,6 +3,7 @@ const globalConfig = {
 
   showSongTitle: true,
   showSongArtist: true,
+  showCharter: true,
   showScoreCounter: true,
   showComboCounter: true,
   showAccuracyLog: true,
