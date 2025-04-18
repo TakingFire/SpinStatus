@@ -140,11 +140,13 @@ function handleSongEvent(event) {
   const [$charter] = utils.$("#charter");
   $title.textContent = event["title"];
   $artist.textContent = event["artist"];
-  $charter.textContent = event["charter"] ? "Chart: " + event["charter"] : "";
+  if (event["difficulty"] == "RemiXD" || event["isCustom"]) {
+    $charter.textContent = event["charter"] ? "Chart: " + event["charter"] : "";
+  }
 
   const height = utils.get(":root", "--artist-size", false);
 
-  animate([$title, $artist], {
+  animate([$title, $artist, $charter], {
     x: [0, 5 * height, -2 * height, 0],
     color: ["#fff", "#fcf", "#fff"],
     delay: stagger(50),
@@ -170,6 +172,7 @@ function handTrackEnd(event) {
   accuracyLog.clear();
 
   if (globalConfig.showOverlayInMenu) {
+    utils.$("#charter")[0].textContent = "";
     handleSongEvent({ title: "Main Menu", artist: "SRXD" });
   } else {
     Overlay.hideOverlay();

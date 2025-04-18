@@ -40,6 +40,14 @@ body {
     /* zoom: 200%; */
 }
 
+#track-info {
+    display: flex;
+    flex-flow: column nowrap;
+    width: min-content;
+    max-width: 100%;
+    position: relative;
+}
+
 #title {
     font-weight: 700;
     font-size: var(--title-size);
@@ -58,7 +66,7 @@ body {
     font-weight: 500;
     font-size: var(--charter-size);
     font-style: italic;
-    color: #fffc;
+    color: #fff;
 }
 
 #counter {
