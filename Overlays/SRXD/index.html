@@ -14,18 +14,22 @@
   </head>
   <body>
     <div id="overlay">
-      <div id="track-info">
-        <span id="title">Connecting...</span>
-        <div style="display: flex; flex-flow: row wrap; column-gap: 1rem">
-          <span id="artist">SRXD</span>
-          <span id="charter"></span>
+      <object id="cover" data="" type="image/png"></object>
+      <div id="content">
+        <div id="track-info">
+          <span id="title">Connecting...</span>
+          <div style="display: flex; flex-flow: row wrap; column-gap: 1rem">
+            <span id="artist">SRXD</span>
+            <span id="charter"></span>
+          </div>
         </div>
+        <div id="counter"></div>
+        <span id="combo"
+          >COMBO: <span id="combo-number">000</span>
+          <span id="combo-type"></span
+        ></span>
+        <div id="log"></div>
       </div>
-      <div id="counter"></div>
-      <span id="combo"
-        >COMBO: <span id="combo-number">000</span> <span id="combo-type"></span
-      ></span>
-      <div id="log"></div>
     </div>
 
     <template id="counter-column-template">

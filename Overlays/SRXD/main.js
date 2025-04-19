@@ -131,20 +131,22 @@ function handleScoreEvent(event) {
 }
 
 function handleSongEvent(event) {
-  if (!globalConfig.showSongTitle && !globalConfig.showSongArtist) {
-    return;
-  }
+  const height = utils.get(":root", "--artist-size", false);
 
   const [$title] = utils.$("#title");
   const [$artist] = utils.$("#artist");
   const [$charter] = utils.$("#charter");
   $title.textContent = event["title"];
   $artist.textContent = event["artist"];
-  if (event["difficulty"] == "RemiXD" || event["isCustom"]) {
-    $charter.textContent = event["charter"] ? "Chart: " + event["charter"] : "";
-  }
 
-  const height = utils.get(":root", "--artist-size", false);
+  if (
+    event["charter"] &&
+    (event["difficulty"] == "RemiXD" || event["isCustom"])
+  ) {
+    $charter.textContent = "Chart: " + event["charter"];
+  } else {
+    utils.$("#charter")[0].textContent = "";
+  }
 
   animate([$title, $artist, $charter], {
     x: [0, 5 * height, -2 * height, 0],
@@ -160,6 +162,20 @@ function handleTrackStart(event) {
   scoreCounter.setValue(0);
   accuracyLog.clear();
 
+  if (globalConfig.showAlbumArt) {
+    const opacity = utils.get(":root", "--album-art-opacity", false);
+    const [$cover] = utils.$("#cover");
+    $cover.data = "";
+    if (event["albumArt"]) {
+      $cover.data = "data:image/png;base64," + event["albumArt"];
+
+      animate($cover, {
+        opacity: [0, opacity],
+        duration: 250,
+      });
+    }
+  }
+
   if (!globalConfig.showOverlayInMenu) {
     Overlay.showOverlay();
   }
@@ -174,6 +190,15 @@ function handTrackEnd(event) {
   if (globalConfig.showOverlayInMenu) {
     utils.$("#charter")[0].textContent = "";
     handleSongEvent({ title: "Main Menu", artist: "SRXD" });
+
+    if (globalConfig.showAlbumArt) {
+      const [$cover] = utils.$("#cover");
+      const opacity = utils.get(":root", "--album-art-opacity", false);
+      animate($cover, {
+        opacity: [opacity, 0],
+        duration: 250,
+      });
+    }
   } else {
     Overlay.hideOverlay();
   }
@@ -196,7 +221,7 @@ const Overlay = {
       duration: 250,
     });
 
-    this.animation = animate("#overlay > *", {
+    this.animation = animate("#track-info > *, #content > *", {
       y: ["1rem", "0"],
       opacity: [0, 1],
       delay: stagger(75, { start: 250 }),
@@ -213,7 +238,7 @@ const Overlay = {
 
     this.isVisible = false;
 
-    this.animation = animate("#overlay > *", {
+    this.animation = animate("#track-info > *, #content > *", {
       y: ["0", "1rem"],
       opacity: [1, 0],
       delay: stagger(75, { reversed: true }),
@@ -369,6 +394,7 @@ class Counter {
   }
 }
 
+if (!globalConfig.showAlbumArt) utils.set("#cover", { display: "none" });
 if (!globalConfig.showSongTitle) utils.set("#title", { display: "none" });
 if (!globalConfig.showSongArtist) utils.set("#artist", { display: "none" });
 if (!globalConfig.showCharter) utils.set("#charter", { display: "none" });

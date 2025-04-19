@@ -4,6 +4,9 @@
     --charter-size: 1.25rem;
     --counter-size: 3rem;
     --log-size: 1.5rem;
+
+    --background-color: #0008;
+    --album-art-opacity: 0.4;
 }
 
 *,
@@ -15,21 +18,17 @@
 }
 
 body {
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
     overflow: hidden;
     padding: 8px;
 }
 
 #overlay {
-    padding: 1rem;
-    padding-top: 0.5rem;
-    font-family: "Montserrat", sans-serif;
-    font-style: normal;
-
-    display: flex;
-    flex-flow: column nowrap;
-
+    position: relative;
     border-radius: 8px;
-    background-color: #0008;
+    background-color: var(--background-color);
+    overflow: hidden;
 
     height: max-content;
     width: max-content;
@@ -38,6 +37,25 @@ body {
 
     /* background-color: #30343f; */
     /* zoom: 200%; */
+}
+
+#content {
+    position: relative;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 1rem;
+    padding-top: 0.5rem;
+}
+
+#cover {
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    opacity: var(--album-art-opacity);
+    transform: scale(1.1);
+    filter: blur(0.15rem);
 }
 
 #track-info {
@@ -114,7 +132,6 @@ body {
 #combo {
     font-weight: 600;
     font-size: calc(var(--counter-size) / 2.5);
-    /* color: #fff; */
     color: #ff0;
     text-shadow:
         0 0 calc(var(--counter-size) / 16) #ff0,

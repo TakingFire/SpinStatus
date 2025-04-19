@@ -1,6 +1,7 @@
 const globalConfig = {
   webSocketPort: 38304,
 
+  showAlbumArt: true,
   showSongTitle: true,
   showSongArtist: true,
   showCharter: true,
