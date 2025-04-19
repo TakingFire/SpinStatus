@@ -5,6 +5,10 @@
     --counter-size: 3rem;
     --log-size: 1.5rem;
 
+    --title-color: #fff;
+    --artist-color: #fff;
+    --charter-color: #fffc;
+
     --background-color: #0008;
     --album-art-opacity: 0.4;
 }
@@ -47,6 +51,11 @@ body {
     padding-top: 0.5rem;
 }
 
+.transition {
+    display: inline-flex;
+    position: relative;
+}
+
 #cover {
     object-fit: cover;
     position: absolute;
@@ -69,22 +78,22 @@ body {
 #title {
     font-weight: 700;
     font-size: var(--title-size);
-    color: #fff;
+    color: var(--title-color);
 }
 
 #artist {
     font-weight: 500;
-    font-size: var(--artist-size);
     font-style: italic;
-    color: #fff;
+    font-size: var(--artist-size);
+    color: var(--artist-color);
 }
 
 #charter {
     margin: 0.2rem 0;
     font-weight: 500;
-    font-size: var(--charter-size);
     font-style: italic;
-    color: #fff;
+    font-size: var(--charter-size);
+    color: var(--charter-color);
 }
 
 #counter {

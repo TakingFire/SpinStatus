@@ -143,18 +143,23 @@ function handleSongEvent(event) {
     event["charter"] &&
     (event["difficulty"] == "RemiXD" || event["isCustom"])
   ) {
-    $charter.textContent = "Chart: " + event["charter"];
+    $charter.textContent = "Chart by " + event["charter"];
   } else {
     utils.$("#charter")[0].textContent = "";
   }
 
-  animate([$title, $artist, $charter], {
-    x: [0, 5 * height, -2 * height, 0],
-    color: ["#fff", "#fcf", "#fff"],
-    delay: stagger(50),
-    duration: 500,
-    ease: eases.outBack(1),
-  });
+  if (globalConfig.showOverlayInMenu) {
+    [$title, $artist, $charter].forEach((el, i) => {
+      const color = utils.get(el, "color");
+      animate(el, {
+        x: [0, 5 * height, -2 * height, 0],
+        color: [color, "#fcf", color],
+        delay: 50 * i,
+        duration: 500,
+        ease: eases.outBack(1),
+      });
+    });
+  }
 }
 
 function handleTrackStart(event) {
@@ -221,7 +226,7 @@ const Overlay = {
       duration: 250,
     });
 
-    this.animation = animate("#track-info > *, #content > *", {
+    this.animation = animate(".transition", {
       y: ["1rem", "0"],
       opacity: [0, 1],
       delay: stagger(75, { start: 250 }),
@@ -238,7 +243,7 @@ const Overlay = {
 
     this.isVisible = false;
 
-    this.animation = animate("#track-info > *, #content > *", {
+    this.animation = animate(".transition", {
       y: ["0", "1rem"],
       opacity: [1, 0],
       delay: stagger(75, { reversed: true }),
