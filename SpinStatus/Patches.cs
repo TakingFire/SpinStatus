@@ -1,6 +1,8 @@
 using HarmonyLib;
 using SimpleJSON;
 using UnityEngine;
+using System.Linq;
+using System;
 
 namespace SpinStatus.Patches
 {
@@ -137,6 +139,30 @@ namespace SpinStatus.Patches
             for (var i = 1; i < 8; i++) {
                 Color color = colorProfile.GetBlender((NoteColorType)i).colorBlend.baseColor;
                 colorJSON[((NoteColorType)i).ToString()] = "#" + ColorUtility.ToHtmlStringRGB(color);
+            }
+
+            AssetLoadingSystem instance = GameSystemSingletonNoSetting<AssetLoadingSystem>.Instance;
+            Texture2DAssetReference assetReference = trackDataSegment.metadata.AlbumArtReferenceCopy();
+
+            AssetBundle[] assetBundles = AssetBundle.GetAllLoadedAssetBundles().ToArray();
+            AssetBundle assetBundle = assetBundles.FirstOrDefault(b => b.name == assetReference?.Bundle);
+            Texture2D asset = assetBundle?.LoadAsset<Texture2D>(assetReference?.Guid);
+
+            if (asset) {
+                RenderTexture tmp = RenderTexture.GetTemporary(
+                    Math.Min(asset.width, 256),
+                    Math.Min(asset.height, 256),
+                    0,
+                    RenderTextureFormat.Default,
+                    RenderTextureReadWrite.sRGB
+                );
+                Graphics.Blit(asset, tmp);
+                Texture2D image = new Texture2D(tmp.width, tmp.height);
+                image.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+                image.Apply();
+                RenderTexture.ReleaseTemporary(tmp);
+
+                trackJSON["albumArt"] = Convert.ToBase64String(image.EncodeToPNG());
             }
 
             Server.ServerBehavior.SendMessage(eventJSON);
