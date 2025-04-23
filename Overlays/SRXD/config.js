@@ -9,6 +9,9 @@ const globalConfig = {
   showComboCounter: true,
   showAccuracyLog: true,
 
+  scoreCounterDigits: 5,
+  accuracyLogLength: 4,
+
   showOverlayPaused: true,
   showOverlayInMenu: true,
   flashScoreCounter: false,

@@ -351,7 +351,7 @@ class CounterColumn {
     const [$template] = utils.$("#counter-column-template");
     const [$counter] = utils.$("#counter");
     this.element = $template.content.cloneNode(true).firstElementChild;
-    $counter.appendChild(this.element);
+    $counter.prepend(this.element);
 
     this.elementAnimator = createAnimatable(this.element, {
       y: { unit: "rem" },
@@ -388,8 +388,16 @@ class Counter {
   }
 
   setValue(value) {
+    const digits = Math.floor(Math.log10(value)) + 1;
+    if (digits > this.length) {
+      for (let i = 0; i < digits - this.length; i++) {
+        this.columns.push(new CounterColumn());
+      }
+      this.length = digits;
+    }
+
     this.columns.forEach((e, i) => {
-      e.setValue(Math.floor(value / Math.pow(10, this.length - (i + 1))));
+      e.setValue(Math.floor(value / Math.pow(10, i)));
     });
     this.value = value;
   }
@@ -416,7 +424,7 @@ if (globalConfig.clipLongSongText) {
 }
 
 const ws = connect();
-const scoreCounter = new Counter(5);
-const accuracyLog = new AccuracyLog(4);
+const scoreCounter = new Counter(globalConfig.scoreCounterDigits);
+const accuracyLog = new AccuracyLog(globalConfig.accuracyLogLength);
 
 Overlay.showOverlay();
