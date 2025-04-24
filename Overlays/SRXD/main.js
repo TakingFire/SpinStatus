@@ -157,6 +157,7 @@ function handleSongEvent(event) {
         delay: 50 * i,
         duration: 500,
         ease: eases.outBack(1),
+        onComplete: utils.cleanInlineStyles,
       });
     });
   }

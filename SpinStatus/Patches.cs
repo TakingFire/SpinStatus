@@ -3,6 +3,8 @@ using SimpleJSON;
 using UnityEngine;
 using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SpinStatus.Patches
 {
@@ -144,9 +146,21 @@ namespace SpinStatus.Patches
             AssetLoadingSystem instance = GameSystemSingletonNoSetting<AssetLoadingSystem>.Instance;
             Texture2DAssetReference assetReference = trackDataSegment.metadata.AlbumArtReferenceCopy();
 
-            AssetBundle[] assetBundles = AssetBundle.GetAllLoadedAssetBundles().ToArray();
-            AssetBundle assetBundle = assetBundles.FirstOrDefault(b => b.name == assetReference?.Bundle);
-            Texture2D asset = assetBundle?.LoadAsset<Texture2D>(assetReference?.Guid);
+            Texture2D asset = null;
+
+            if (!string.IsNullOrEmpty(assetReference.Bundle)) {
+                AssetBundle[] assetBundles = AssetBundle.GetAllLoadedAssetBundles().ToArray();
+                AssetBundle assetBundle = assetBundles.FirstOrDefault(b => b.name == assetReference?.Bundle);
+                asset = assetBundle?.LoadAsset<Texture2D>(assetReference?.Guid);
+            }
+            else {
+                string customArtDir = Path.Combine(Application.persistentDataPath, "Custom", "AlbumArt");
+                string customArtPath = Path.Combine(customArtDir, assetReference?.AssetName + ".png");
+                if (File.Exists(customArtPath)) {
+                    asset = new Texture2D(2, 2);
+                    asset.LoadImage(File.ReadAllBytes(customArtPath));
+                }
+            }
 
             if (asset) {
                 RenderTexture tmp = RenderTexture.GetTemporary(
@@ -157,6 +171,7 @@ namespace SpinStatus.Patches
                     RenderTextureReadWrite.sRGB
                 );
                 Graphics.Blit(asset, tmp);
+
                 Texture2D image = new Texture2D(tmp.width, tmp.height);
                 image.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
                 image.Apply();
