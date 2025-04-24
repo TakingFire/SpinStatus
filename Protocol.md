@@ -47,12 +47,14 @@ Type | Status | Description
   "color": Number, // 0 (Red) | 1 (Blue)
 
   "accuracy": String,
-  "timing"  : Number,
+  "timing"  : Number, // Seconds
 }
 ```
 
 <details>
   <summary><strong>Note Types</strong></summary>
+
+> **Drum** notes are better known as **Beat** notes. This may be updated in the future.
 
 ```js
 [
@@ -79,7 +81,7 @@ Type | Status | Description
 
 ```js
 [
-  "Valid", // Match, Spin
+  "Valid", // Match, Spin, Scratch
   "PerfectPlus",
   "Perfect",
   "EarlyPerfect",
@@ -89,7 +91,7 @@ Type | Status | Description
   "EarlyGood",
   "Okay",
   "EarlyOkay",
-  "Failed",
+  "Failed", // Missed
 ]
 ```
 
@@ -99,13 +101,13 @@ Type | Status | Description
 
 ```js
 {
-  "score"     : Number,
-  "combo"     : Number,
-  "maxCombo"  : Number,
+  "score"     : Number, // Current score
+  "combo"     : Number, // Current combo
+  "maxCombo"  : Number, // Largest achieved combo
   "fullCombo" : String,
-  "health"    : Number,
-  "maxHealth" : Number,
-  "multiplier": Number,
+  "health"    : Number, // Current health
+  "maxHealth" : Number, // Total health
+  "multiplier": Number, // Score multiplier
 }
 ```
 
@@ -127,16 +129,20 @@ Type | Status | Description
 
 ### TrackStatus Object
 
+<img src="https://github.com/user-attachments/assets/762fa8ce-48da-4a62-8e66-ecbc70b8a411" width=600 />
+
+
 ```js
 {
-  "title"   : String,
-  "subTitle": String
-  "artist"  : String,
-  "feat"    : String,
-  "charter" : String,
+  "title"   : String, // 1
+  "subTitle": String, // 2
+  "artist"  : String, // 3
+  "feat"    : String, // 4
+  "charter" : String, // Name of chart creator
+  "albumArt": String, // Base64 PNG data
 
-  "startTime": Number,
-  "endTime"  : Number,
+  "startTime": Number, // Seconds
+  "endTime"  : Number, // Seconds
 
   "difficulty": String,
   "isCustom"  : Boolean,
@@ -147,6 +153,7 @@ Type | Status | Description
   <summary><strong>Difficulty Values</strong></summary>
 
 ```js
+
 [
   "RemiXD",
   "XD",
