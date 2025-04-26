@@ -1,0 +1,59 @@
+*,
+::before,
+::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
+    overflow: hidden;
+    padding: 8px;
+
+    background-color: #30343f;
+}
+
+#overlay {
+    width: min-content;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.graph {
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+#note-graph {
+    width: 50px;
+    height: 300px;
+}
+
+#time-graph {
+    width: 600px;
+    height: 300px;
+}
+
+#info-bar {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    width: 50%;
+    position: absolute;
+    top: 21px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#info-bar span {
+    color: #fff4;
+}
+
+#info-bar span span {
+    color: #fffc;
+}
