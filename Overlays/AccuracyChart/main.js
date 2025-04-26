@@ -33,9 +33,6 @@ function onMessage(e) {
       trackClock.active = true;
       break;
   }
-
-  if (event["type"] == "noteEvent") {
-  }
 }
 
 function onClose() {
@@ -85,6 +82,12 @@ function handleTrackStart(event) {
   noteGraph.clear();
   timeGraph.clear();
   timingHistory.clear();
+  earlyAvg.clear();
+  lateAvg.clear();
+
+  document.getElementById("early-avg-val").textContent = "0";
+  document.getElementById("late-avg-val").textContent = "0";
+  document.getElementById("total-avg-val").textContent = "0";
 }
 
 function handleTrackEnd() {
