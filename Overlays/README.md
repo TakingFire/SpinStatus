@@ -14,6 +14,8 @@ Download: [DownGit](https://downgit.github.io/#/home?url=https://github.com/Taki
 
 ## Usage
 
+### In OBS
+
 1. Create a new Browser Source.
 2. Add the overlay URL to the source.
    - If downloading, check `Local file` and select `index.html`.
