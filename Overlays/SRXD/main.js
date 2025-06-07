@@ -1,8 +1,7 @@
 const { animate, createAnimatable, utils, eases, stagger } = anime;
 
-let hasReconnected = false;
-
 function connect() {
+  handleSongEvent({ title: "Connecting...", artist: "SRXD" });
   const ws = new WebSocket("ws://localhost:" + globalConfig.webSocketPort);
   ws.onopen = onOpen;
   ws.onmessage = onMessage;
@@ -57,10 +56,7 @@ function onClose() {
   accuracyLog.clear();
   Overlay.showOverlay();
 
-  if (!hasReconnected) {
-    hasReconnected = true;
-    connect();
-  }
+  setTimeout(connect, 8000);
 }
 
 function onError() {
