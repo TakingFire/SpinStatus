@@ -18,7 +18,7 @@ const ws = new WebSocket("ws://localhost:38304/");
 ### Event Object
 
 Every message sent by the server follows this format.\
-`type` indicates the event that was triggered, which may or may not contain a relevent `status` object. (More information below)
+`type` indicates the event that was triggered, which may or may not contain a relevant `status` object. (More information below)
 
 ```js
   {

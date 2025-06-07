@@ -34,7 +34,7 @@ function onMessage(e) {
       handleTrackStart(event["status"]);
       break;
     case "trackEnd":
-      handTrackEnd(event);
+      handleTrackEnd(event);
       break;
     case "trackPause":
     case "trackComplete":
@@ -187,7 +187,7 @@ function handleTrackStart(event) {
   }
 }
 
-function handTrackEnd(event) {
+function handleTrackEnd(event) {
   utils.$("#combo-number")[0].textContent = "000";
   utils.$("#combo-type")[0].textContent = "";
   scoreCounter.setValue(0);

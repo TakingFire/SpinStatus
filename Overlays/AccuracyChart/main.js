@@ -223,6 +223,7 @@ class TimeGraph extends Graph {
   clear() {
     super.clear();
     this.drawGrid();
+    this.drawTicks();
     this.previousPos = { x: 0, y: this.height / 2 };
   }
 
@@ -248,6 +249,23 @@ class TimeGraph extends Graph {
 
     this.previousPos.x = x;
     this.previousPos.y = y;
+  }
+
+  drawTicks() {
+    const totalDuration = trackClock.endTime - trackClock.startTime;
+
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = "#fff4";
+    this.ctx.lineWidth = 1.0;
+
+    for (let time = 30; time < totalDuration; time += 30) {
+      const x = this.width * (time / totalDuration);
+
+      this.ctx.moveTo(x, this.height / 2 - 2);
+      this.ctx.lineTo(x, this.height / 2 + 2);
+    }
+
+    this.ctx.stroke();
   }
 
   drawNote(event) {

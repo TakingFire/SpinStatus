@@ -1,5 +1,5 @@
 const globalConfig = {
-  magnified: false, // Reserve more room for Pefect and Perfect+
+  magnified: true, // Reserve more room for Pefect and Perfect+
 
   coloredNotes: true,
   coloredLine: true,
