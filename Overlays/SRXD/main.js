@@ -404,6 +404,16 @@ class Counter {
   }
 }
 
+for (const [key, value] of new URLSearchParams(window.location.search)) {
+  if (globalConfig[key] != undefined) {
+    if (typeof globalConfig[key] == "number") globalConfig[key] = Number(value);
+    if (typeof globalConfig[key] == "boolean")
+      globalConfig[key] = value == "true";
+  }
+}
+
+utils.set(":root", { zoom: globalConfig.overlayScale });
+
 if (!globalConfig.showAlbumArt) utils.set("#cover", { display: "none" });
 if (!globalConfig.showSongTitle) utils.set("#title", { display: "none" });
 if (!globalConfig.showSongArtist) utils.set("#artist", { display: "none" });

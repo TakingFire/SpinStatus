@@ -1,5 +1,6 @@
 const globalConfig = {
   webSocketPort: 38304,
+  overlayScale: 1,
 
   showAlbumArt: true,
   showSongTitle: true,
