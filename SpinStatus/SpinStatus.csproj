@@ -30,13 +30,16 @@
 
 <ItemGroup>
     <Reference Include="Assembly-CSharp" Publicize="true">
-        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <HintPath Condition="Exists('..\..\SpinRhythm_Data')">..\..\SpinRhythm_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <HintPath Condition="Exists('$(BaseGameDir)\SpinRhythm_Data')">$(BaseGameDir)\SpinRhythm_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="SSD.Game">
-        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
+        <HintPath Condition="Exists('..\..\SpinRhythm_Data')">..\..\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
+        <HintPath Condition="Exists('$(BaseGameDir)\SpinRhythm_Data')">$(BaseGameDir)\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
     </Reference>
     <Reference Include="Spin.Game.TrackPlaybackSystem">
-        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
+        <HintPath Condition="Exists('..\..\SpinRhythm_Data')">..\..\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
+        <HintPath Condition="Exists('$(BaseGameDir)\SpinRhythm_Data')">$(BaseGameDir)\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
     </Reference>
 </ItemGroup>
 
@@ -50,5 +53,5 @@
 <ItemGroup Condition = "'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include = "Microsoft.NETFramework.ReferenceAssemblies" Version = "1.0.2" PrivateAssets = "all" />
 </ItemGroup>
-    
+
 </Project>
