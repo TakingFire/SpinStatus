@@ -73,6 +73,7 @@ namespace SpinStatus.Patches
                     scoreJSON["health"] = playState.health;
                     scoreJSON["maxHealth"] = playState.MaxHealth;
                     scoreJSON["multiplier"] = playState.multiplier;
+                    scoreJSON["maxScore"] = playState.maxPossibleScoreState.MaxPossibleScore;
 
                     Server.ServerBehavior.SendMessage(scoreEventJSON);
                 }
