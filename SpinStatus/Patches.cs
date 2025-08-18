@@ -117,6 +117,8 @@ namespace SpinStatus.Patches
 
             TrackDataSegment trackDataSegment = trackData.GetFirstSegment();
             TrackInfoMetadata trackMeta = trackDataSegment.GetTrackInfoMetadata();
+            TrackInfoAssetReference assetInfo = trackDataSegment.metadata.TrackInfoRef;
+            TrackDataMetadata mapData = trackDataSegment.GetTrackDataMetadata();
 
             playState.trackData.GetFirstSegment();
 
@@ -129,9 +131,12 @@ namespace SpinStatus.Patches
             trackJSON["feat"] = trackMeta.featArtists;
             trackJSON["charter"] = trackMeta.charter;
             trackJSON["difficulty"] = playState.CurrentDifficulty.ToString();
+            trackJSON["rating"] = mapData.DifficultyRating;
             trackJSON["isCustom"] = trackMeta.isCustom;
             trackJSON["startTime"] = playState.startTrackTime;
             trackJSON["endTime"] = trackData.GameplayEndTick.ToSecondsFloat();
+            trackJSON["filename"] = trackMeta.isCustom ? assetInfo.customFile.FileNameNoExtension : "";
+            trackJSON["maxScore"] = mapData.MaxScore;
 
             var colorJSON = trackJSON["palette"].AsObject;
 
