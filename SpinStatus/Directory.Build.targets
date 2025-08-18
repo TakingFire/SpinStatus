@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <Target Name="PostBuildScript" AfterTargets="AfterBuild">
+        <Message Text="-> Copying $(TargetPath) to $(BaseGameDir)\BepInEx\plugins" Importance="high"/>
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BaseGameDir)\BepInEx\plugins"
+              SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true"/>
+    </Target>
+    <Target Name="PostBuildScriptDebug" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Debug'">
+        <Message Text="-> Copying $(ProjectDir)bin\Debug\$(TargetFramework)\$(AssemblyName).pdb to $(BaseGameDir)\BepInEx\plugins" Importance="high"/>
+        <Copy SourceFiles="$(ProjectDir)bin\Debug\$(TargetFramework)\$(AssemblyName).pdb" DestinationFolder="$(BaseGameDir)\BepInEx\plugins"
+              SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true"/>
+    </Target>
+</Project>
