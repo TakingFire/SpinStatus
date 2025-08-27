@@ -3,7 +3,6 @@ using SimpleJSON;
 using UnityEngine;
 using System.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SpinStatus.Patches

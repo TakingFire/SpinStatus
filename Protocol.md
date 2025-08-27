@@ -146,12 +146,12 @@ Type | Status | Description
   "startTime": Number, // Seconds
   "endTime"  : Number, // Seconds
 
-  "difficulty": String, 
-  "rating"    : Number,
+  "difficulty": String, // Difficulty name (e.g. "Expert")
+  "rating"    : Number, // Difficulty number
   "maxScore"  : Number, // Maximum possible score
-        
+
   "isCustom": Boolean,
-  "filename": String, // srtb filename (if custom)
+  "filename": String,  // SRTB filename (if custom)
 }
 ```
 
