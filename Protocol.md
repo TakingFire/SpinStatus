@@ -101,13 +101,15 @@ Type | Status | Description
 
 ```js
 {
-  "score"     : Number, // Current score
-  "combo"     : Number, // Current combo
-  "maxCombo"  : Number, // Largest achieved combo
-  "fullCombo" : String,
-  "health"    : Number, // Current health
-  "maxHealth" : Number, // Total health
-  "multiplier": Number, // Score multiplier
+  "score"        : Number, // Current score
+  "combo"        : Number, // Current combo
+  "maxCombo"     : Number, // Largest achieved combo
+  "fullCombo"    : String,
+  "health"       : Number, // Current health
+  "maxHealth"    : Number, // Total health
+  "multiplier"   : Number, // Score multiplier
+  "baseScore"    : Number, // Score (without multipliers)
+  "baseScoreLost": Number // Score (without multipliers) lost to mistakes
 }
 ```
 
@@ -144,8 +146,12 @@ Type | Status | Description
   "startTime": Number, // Seconds
   "endTime"  : Number, // Seconds
 
-  "difficulty": String,
-  "isCustom"  : Boolean,
+  "difficulty": String, // Difficulty name (e.g. "Expert")
+  "rating"    : Number, // Difficulty number
+  "maxScore"  : Number, // Maximum possible score
+
+  "isCustom": Boolean,
+  "filename": String,  // SRTB filename (if custom)
 }
 ```
 
