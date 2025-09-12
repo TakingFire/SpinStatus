@@ -1,9 +1,9 @@
 using HarmonyLib;
 using SimpleJSON;
-using UnityEngine;
-using System.Linq;
 using System;
 using System.IO;
+using System.Linq;
+using UnityEngine;
 
 namespace SpinStatus.Patches
 {
@@ -15,8 +15,8 @@ namespace SpinStatus.Patches
             public bool isSustained { get; set; }
         }
 
-        private static float previousScoreEventTime = 0;
-        private const float scoreEventInterval = 0.125F;
+        private static float previousScoreEventTime = 0f;
+        private const float scoreEventInterval = 0.125f;
 
         private enum NoteEndType {
             DrumEnd = 2,
@@ -27,7 +27,7 @@ namespace SpinStatus.Patches
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(TrackGameplayLogic), nameof(TrackGameplayLogic.UpdateNoteState))]
-        private static void Prefix(this PlayState playState, int noteIndex, ref TempNoteState __state)
+        private static void ScoreEventPre(this PlayState playState, int noteIndex, ref TempNoteState __state)
         {
             ScoreState scoreState = playState.scoreState;
             ref NoteState noteState = ref scoreState.GetNoteState(noteIndex);
@@ -38,7 +38,7 @@ namespace SpinStatus.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(TrackGameplayLogic), nameof(TrackGameplayLogic.UpdateNoteState))]
-        private static void Postfix(this PlayState playState, int noteIndex, ref TempNoteState __state)
+        private static void ScoreEventPost(this PlayState playState, int noteIndex, ref TempNoteState __state)
         {
             ScoreState scoreState = playState.scoreState;
             ref NoteState noteState = ref scoreState.GetNoteState(noteIndex);
@@ -97,7 +97,7 @@ namespace SpinStatus.Patches
             var noteJSON = noteEventJSON["status"].AsObject;
             noteJSON["index"] = noteIndex;
             noteJSON["accuracy"] = noteState.timingAccuracy.ToString();
-            noteJSON["timing"] = noteState.timingOffset ?? 0;
+            noteJSON["timing"] = noteState.timingOffset ?? 0f;
             noteJSON["type"] = noteType;
             noteJSON["color"] = (int)note.colorIndex;
             noteJSON["lane"] = (int)note.column;
@@ -111,7 +111,7 @@ namespace SpinStatus.Patches
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.PlayTrack))]
-        private static void StartTrack()
+        private static void TrackStart()
         {
             PlayState playState = Track.PlayStates[0];
             PlayableTrackData trackData = playState.trackData;
@@ -191,7 +191,7 @@ namespace SpinStatus.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.StopTrack))]
-        private static void StopTrack()
+        private static void TrackEnd()
         {
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackEnd";
@@ -201,7 +201,7 @@ namespace SpinStatus.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.HandlePauseGame))]
-        private static void PauseTrack()
+        private static void TrackPause()
         {
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackPause";
@@ -210,7 +210,7 @@ namespace SpinStatus.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.HandleUnpauseGame))]
-        private static void ResumeTrack()
+        private static void TrackResume()
         {
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackResume";
@@ -219,7 +219,7 @@ namespace SpinStatus.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.CompleteSong))]
-        private static void CompleteTrack()
+        private static void TrackComplete()
         {
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackComplete";
@@ -228,7 +228,7 @@ namespace SpinStatus.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.FailSong))]
-        private static void FailTrack()
+        private static void TrackFail()
         {
             var eventJSON = new JSONObject();
             eventJSON["type"] = "trackFail";
