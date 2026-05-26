@@ -15,7 +15,7 @@ namespace SpinStatus.Server
             _instances.Add(this);
 
             var eventJSON = new JSONObject();
-            eventJSON["event"] = "hello";
+            eventJSON["type"] = "hello";
 
             this.SendAsync(eventJSON.ToString(), null);
         }
