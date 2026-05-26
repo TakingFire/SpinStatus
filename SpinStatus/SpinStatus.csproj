@@ -9,7 +9,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>SpinStatus</AssemblyName>
     <Product>SpinStatus</Product>
-    <Version>0.4.0</Version>
+    <Version>0.4.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
