@@ -44,7 +44,7 @@ Type | Status | Description
   "index": Number, // Note identifier
   "lane" : Number, // Note lane
   "type" : String, // Note type
-  "color": Number, // 0 (Red) | 1 (Blue)
+  "color": Number, // 0 (Blue) | 1 (Red)
 
   "accuracy": String,
   "timing"  : Number, // Seconds
