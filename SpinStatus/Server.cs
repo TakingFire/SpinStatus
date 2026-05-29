@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SpinStatus.Model;
-using WebSocketSharp;
-using WebSocketSharp.Server;
+using Fleck;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -9,40 +8,45 @@ using Newtonsoft.Json.Converters;
 
 namespace SpinStatus.Server
 {
-    public class ServerBehavior : WebSocketBehavior
+    internal class Socket(int port) : WebSocketServer($"ws://0.0.0.0:{port}")
     {
-        private static readonly List<ServerBehavior> _instances = [];
+        private static readonly List<IWebSocketConnection> _instances = [];
         private static readonly JsonSerializerSettings _jsonSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Converters = [new StringEnumConverter(new CamelCaseNamingStrategy())]
         };
 
-        protected override void OnOpen()
+        public void Start()
         {
-            base.OnOpen();
-            _instances.Add(this);
-
-            var helloEvent = new Event
+            FleckLog.Level = LogLevel.Error;
+            base.Start(socket =>
             {
-                Type = Model.EventType.Hello
-            };
+                socket.OnOpen = () =>
+                {
+                    _instances.Add(socket);
 
-            this.SendAsync(JsonConvert.SerializeObject(helloEvent, _jsonSettings), null);
+                    socket.Send(JsonConvert.SerializeObject(new Event
+                    {
+                        Type = Model.EventType.Hello
+                    }, _jsonSettings));
+                };
+
+                socket.OnClose = () => _instances.Remove(socket);
+            });
         }
 
-        protected override void OnClose(CloseEventArgs e)
+        public void Stop()
         {
-            _instances.Remove(this);
-            base.OnClose(e);
+            base.Dispose();
         }
 
-        internal static void SendMessage(Event evt)
+        public static void SendMessage(Event evt)
         {
             string json = JsonConvert.SerializeObject(evt, _jsonSettings);
             foreach (var instance in _instances)
             {
-                instance.SendAsync(json, null);
+                instance.Send(json);
             }
         }
     }

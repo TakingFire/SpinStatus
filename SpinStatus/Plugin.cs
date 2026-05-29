@@ -1,8 +1,6 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using WebSocketSharp;
-using WebSocketSharp.Server;
 
 namespace SpinStatus;
 
@@ -18,15 +16,14 @@ public class Plugin : BaseUnityPlugin
     internal static new ManualLogSource Logger;
     private static Harmony _harmony;
 
-    public static HttpServer server;
+    internal static Server.Socket server;
     public static int port = 38304;
 
     private void Awake()
     {
         Logger = base.Logger;
 
-        server = new HttpServer(port);
-        server.AddWebSocketService<Server.ServerBehavior>("/");
+        server = new Server.Socket(port);
         server.Start();
 
         Logger.LogInfo($"Server started on port {port}");

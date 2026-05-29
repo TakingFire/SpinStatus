@@ -83,7 +83,7 @@ namespace SpinStatus.Patches
                         }
                     };
 
-                    Server.ServerBehavior.SendMessage(scoreEvent);
+                    Server.Socket.SendMessage(scoreEvent);
                 }
             }
 
@@ -113,7 +113,7 @@ namespace SpinStatus.Patches
                 }
             };
 
-            Server.ServerBehavior.SendMessage(noteEvent);
+            Server.Socket.SendMessage(noteEvent);
         }
     }
 
@@ -209,7 +209,7 @@ namespace SpinStatus.Patches
                 trackEvent.Status = trackStatus;
             }
 
-            Server.ServerBehavior.SendMessage(trackEvent);
+            Server.Socket.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
@@ -217,7 +217,7 @@ namespace SpinStatus.Patches
         private static void TrackEnd()
         {
             var trackEvent = new Model.Event { Type = Model.EventType.TrackEnd };
-            Server.ServerBehavior.SendMessage(trackEvent);
+            Server.Socket.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
@@ -225,7 +225,7 @@ namespace SpinStatus.Patches
         private static void TrackPause()
         {
             var trackEvent = new Model.Event { Type = Model.EventType.TrackPause };
-            Server.ServerBehavior.SendMessage(trackEvent);
+            Server.Socket.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
@@ -233,7 +233,7 @@ namespace SpinStatus.Patches
         private static void TrackResume()
         {
             var trackEvent = new Model.Event { Type = Model.EventType.TrackResume };
-            Server.ServerBehavior.SendMessage(trackEvent);
+            Server.Socket.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
@@ -241,7 +241,7 @@ namespace SpinStatus.Patches
         private static void TrackComplete()
         {
             var trackEvent = new Model.Event { Type = Model.EventType.TrackComplete };
-            Server.ServerBehavior.SendMessage(trackEvent);
+            Server.Socket.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
@@ -249,7 +249,7 @@ namespace SpinStatus.Patches
         private static void TrackFail()
         {
             var trackEvent = new Model.Event { Type = Model.EventType.TrackFail };
-            Server.ServerBehavior.SendMessage(trackEvent);
+            Server.Socket.SendMessage(trackEvent);
         }
     }
 }
