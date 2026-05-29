@@ -1,23 +1,34 @@
 using System.Collections.Generic;
+using SpinStatus.Model;
 using WebSocketSharp;
 using WebSocketSharp.Server;
-using SimpleJSON;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace SpinStatus.Server
 {
     public class ServerBehavior : WebSocketBehavior
     {
-        private static List<ServerBehavior> _instances = new List<ServerBehavior>();
+        private static readonly List<ServerBehavior> _instances = [];
+        private static readonly JsonSerializerSettings _jsonSettings = new()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = [new StringEnumConverter(new CamelCaseNamingStrategy())]
+        };
 
         protected override void OnOpen()
         {
             base.OnOpen();
             _instances.Add(this);
 
-            var eventJSON = new JSONObject();
-            eventJSON["type"] = "hello";
+            var helloEvent = new Event
+            {
+                Type = Model.EventType.Hello
+            };
 
-            this.SendAsync(eventJSON.ToString(), null);
+            this.SendAsync(JsonConvert.SerializeObject(helloEvent, _jsonSettings), null);
         }
 
         protected override void OnClose(CloseEventArgs e)
@@ -26,9 +37,12 @@ namespace SpinStatus.Server
             base.OnClose(e);
         }
 
-        public static void SendMessage(JSONObject json) {
-            foreach (var instance in _instances) {
-                instance.SendAsync(json.ToString(), null);
+        internal static void SendMessage(Event evt)
+        {
+            string json = JsonConvert.SerializeObject(evt, _jsonSettings);
+            foreach (var instance in _instances)
+            {
+                instance.SendAsync(json, null);
             }
         }
     }

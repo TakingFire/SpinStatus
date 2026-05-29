@@ -45,6 +45,12 @@
     <Reference Include="Spin.Game.TrackPlaybackSystem">
         <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
     </Reference>
+    <Reference Include="SpinCore">
+        <HintPath>$(PluginsDir)\SpinCore\SpinCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+        <HintPath>$(PluginsDir)\SpinCore\Newtonsoft.Json.dll</HintPath>
+    </Reference>
 </ItemGroup>
 
 <Target Name="MoveToBepInEx" AfterTargets="Build">
