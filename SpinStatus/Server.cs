@@ -38,6 +38,10 @@ namespace SpinStatus.Server
 
         public void Stop()
         {
+            foreach (var instance in _instances)
+            {
+                instance.Close();
+            }
             base.Dispose();
         }
 

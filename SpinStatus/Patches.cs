@@ -1,6 +1,8 @@
+using GameSystems.LocalMultiplayer;
 using HarmonyLib;
 using SpinStatus.Model;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -69,6 +71,7 @@ namespace SpinStatus.Patches
                     var scoreEvent = new Model.Event
                     {
                         Type = Model.EventType.ScoreEvent,
+                        Player = playState.playerIndex,
                         Status = new ScoreStatus
                         {
                             Score = scoreState.TotalScore,
@@ -102,6 +105,7 @@ namespace SpinStatus.Patches
             var noteEvent = new Model.Event
             {
                 Type = Model.EventType.NoteEvent,
+                Player = playState.playerIndex,
                 Status = new NoteStatus
                 {
                     Index = noteIndex,
@@ -120,19 +124,14 @@ namespace SpinStatus.Patches
     [HarmonyPatch]
     internal static class SceneEventHandler
     {
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.PlayTrack))]
         private static void TrackStart()
         {
-            PlayState playState = Track.PlayStates[0];
-            PlayableTrackData trackData = playState.trackData;
-
-            TrackDataSegment trackDataSegment = trackData.GetFirstSegment();
+            TrackDataSegment trackDataSegment = Track.PlayStates[0].trackData.GetFirstSegment();
             TrackInfoMetadata trackMeta = trackDataSegment.GetTrackInfoMetadata();
             TrackInfoAssetReference assetInfo = trackDataSegment.metadata.TrackInfoRef;
-            TrackDataMetadata mapData = trackDataSegment.GetTrackDataMetadata();
-
-            playState.trackData.GetFirstSegment();
 
             var trackEvent = new Model.Event
             {
@@ -144,27 +143,48 @@ namespace SpinStatus.Patches
                     Artist = trackMeta.artistName,
                     Feat = trackMeta.featArtists,
                     Charter = trackMeta.charter,
-                    Difficulty = playState.CurrentDifficulty.ToString(),
-                    Rating = mapData.DifficultyRating,
-                    IsCustom = trackMeta.isCustom,
-                    StartTime = playState.startTrackTime,
-                    EndTime = trackData.GameplayEndTick.ToSecondsFloat(),
-                    Filename = trackMeta.isCustom ? assetInfo.customFile.FileNameNoExtension : "",
-                    MaxScore = mapData.MaxScore,
 
-                    Palette = []
+                    StartTime = Track.PlayStates[0].startTrackTime,
+                    EndTime = Track.PlayStates[0].trackData.GameplayEndTick.ToSecondsFloat(),
+
+                    IsCustom = trackMeta.isCustom,
+                    Filename = trackMeta.isCustom ? assetInfo.customFile.FileNameNoExtension : "",
+
+                    Players = [],
                 }
             };
 
             var trackStatus = (TrackStatus)trackEvent.Status;
 
-            ColorSystem colorSystem = GameSystemSingleton<ColorSystem, ColorSystemSettings>.Instance;
-            ColorSystem.NoteColorProfile colorProfile = colorSystem.GetNoteColorProfile(playState.GetNoteColorProfile());
+            List<ActivePlayer> players = GameSystemSingletonNoSetting<LocalMultiplayerSystem>.Instance.ActivePlayers;
 
-            for (var i = 1; i < 8; i++)
+            for (var i = 0; i < players.Count; i++)
             {
-                Color color = colorProfile.GetBlender((NoteColorType)i).colorBlend.baseColor;
-                trackStatus.Palette.Add((NoteColorType)i, "#" + ColorUtility.ToHtmlStringRGB(color));
+                PlayState playState = Track.PlayStates[i];
+                PlayableTrackData trackData = playState.Handle.GetDataForPlayerIndex(i);
+                TrackDataMetadata mapData = trackData.GetFirstSegment().metadata?.TrackDataMetadata?.GetMetadataForDifficulty(playState.CurrentDifficulty);
+
+                PlayerStatus playerStatus = new()
+                {
+                    TotalWins = players[i].totalWins,
+                    DisplayName = players[i].displayName,
+                    Palette = [],
+
+                    Difficulty = playState.CurrentDifficulty.ToString(),
+                    Rating = mapData.DifficultyRating,
+                    MaxScore = mapData.MaxScore,
+                };
+
+                ColorSystem colorSystem = GameSystemSingleton<ColorSystem, ColorSystemSettings>.Instance;
+                ColorSystem.NoteColorProfile colorProfile = colorSystem.GetNoteColorProfile(playState.GetNoteColorProfile());
+
+                for (var j = 1; j < 8; j++)
+                {
+                    Color color = colorProfile.GetBlender((NoteColorType)j).colorBlend.baseColor;
+                    playerStatus.Palette.Add((NoteColorType)j, "#" + ColorUtility.ToHtmlStringRGB(color));
+                }
+
+                trackStatus.Players.Add(playerStatus);
             }
 
             AssetLoadingSystem instance = GameSystemSingletonNoSetting<AssetLoadingSystem>.Instance;

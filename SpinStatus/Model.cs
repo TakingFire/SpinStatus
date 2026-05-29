@@ -1,8 +1,6 @@
 #nullable enable
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace SpinStatus.Model
 {
@@ -10,6 +8,7 @@ namespace SpinStatus.Model
     {
         public EventType Type { get; set; }
         public object? Status { get; set; }
+        public int? Player { get; set; }
     }
 
     internal enum EventType
@@ -61,13 +60,20 @@ namespace SpinStatus.Model
         public float StartTime { get; set; }
         public float EndTime { get; set; }
 
-        public string Difficulty { get; set; }
-        public int Rating { get; set; }
-        public int MaxScore { get; set; }
-
         public bool IsCustom { get; set; }
         public string Filename { get; set; }
 
+        public List<PlayerStatus> Players { get; set; }
+    }
+
+    internal struct PlayerStatus
+    {
+        public int TotalWins { get; set; }
+        public string DisplayName { get; set; }
         public Dictionary<NoteColorType, string> Palette { get; set; }
+
+        public string Difficulty { get; set; }
+        public int Rating { get; set; }
+        public int MaxScore { get; set; }
     }
 }

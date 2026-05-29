@@ -12,14 +12,13 @@ public class Plugin : BaseUnityPlugin
     public const string Name = "SpinStatus";
     public const string Version = "0.4.1";
 
-
     internal static new ManualLogSource Logger;
     private static Harmony _harmony;
 
     internal static Server.Socket server;
     public static int port = 38304;
 
-    private void Awake()
+    protected void Awake()
     {
         Logger = base.Logger;
 
@@ -33,9 +32,9 @@ public class Plugin : BaseUnityPlugin
         _harmony.PatchAll(typeof(Patches.SceneEventHandler));
     }
 
-    private void OnDestroy()
+    protected void OnDestroy()
     {
-        server.Stop();
+        server?.Stop();
         _harmony.UnpatchSelf();
     }
 }

@@ -18,24 +18,26 @@ const ws = new WebSocket("ws://localhost:38304/");
 ### Event Object
 
 Every message sent by the server follows this format.\
-`type` indicates the event that was triggered, which may or may not contain a relevant `status` object. (More information below)
+`type` indicates the event that was triggered, which may or may not contain a relevant `status` object. (More information below)\
+Additionally, some events may have an associated `player` index. This corresponds with the `players` send by `trackStart`.
 
 ```js
   {
-    "type":   String,
+    "type"  : String,
     "status": Object,
+    "player": Number,
   }
 ```
 
-Type | Status | Description
----- | ------ | -----------
-`"hello"` | | Sent on initial connection.
-`"noteEvent"` | [NoteStatus](Protocol.md#notestatus-object) | Sent when a note is hit or missed.
-`"scoreEvent"` | [ScoreStatus](Protocol.md#scorestatus-object) | Sent when the score changes. Usually coincides with a `noteEvent`, but updates continuously during sustained notes.
-`"trackStart"` | [TrackStatus](Protocol.md#trackstatus-object)<br>[PlayerStatus](Protocol.md#playerstatus-object) | Sent when a track starts.
-`"trackEnd"` | | Sent when a track ends (returns to song list).
-`"trackComplete"`<br>`"trackFail"` | | Sent when a track ends (shows results screen).
-`"trackPause"`<br>`"trackResume"` | | Sent when the game is paused or resumed.
+Type | Status | Player | Description
+---- | ------ | :----: | -----------
+`"hello"` | | | Sent on initial connection.
+`"noteEvent"` | [NoteStatus](Protocol.md#notestatus-object) | ✅ | Sent when a note is hit or missed.
+`"scoreEvent"` | [ScoreStatus](Protocol.md#scorestatus-object) | ✅ | Sent when the score changes. Usually coincides with a `noteEvent`, but updates continuously during sustained notes.
+`"trackStart"` | [TrackStatus](Protocol.md#trackstatus-object)<br>[PlayerStatus](Protocol.md#playerstatus-object) | | Sent when a track starts.
+`"trackEnd"` | | | Sent when a track ends (returns to song list).
+`"trackComplete"`<br>`"trackFail"` | | | Sent when a track ends (shows results screen).
+`"trackPause"`<br>`"trackResume"` | | | Sent when the game is paused or resumed.
 
 ### NoteStatus Object
 
@@ -146,12 +148,24 @@ Type | Status | Description
   "startTime": Number, // Seconds
   "endTime"  : Number, // Seconds
 
+  "isCustom": Boolean,
+  "filename": String,  // SRTB filename (if custom)
+
+  "players": PlayerStatus[] // Player-specific data
+}
+```
+
+### PlayerStatus Object
+
+```js
+{
+  "totalWins"  : Number, // Wins this session
+  "displayName": String, // "P1", "P2", etc.
+  "palette"    : NotePalette,
+
   "difficulty": String, // Difficulty name (e.g. "Expert")
   "rating"    : Number, // Difficulty number
   "maxScore"  : Number, // Maximum possible score
-
-  "isCustom": Boolean,
-  "filename": String,  // SRTB filename (if custom)
 }
 ```
 
@@ -159,7 +173,6 @@ Type | Status | Description
   <summary><strong>Difficulty Values</strong></summary>
 
 ```js
-
 [
   "RemiXD",
   "XD",
@@ -171,14 +184,6 @@ Type | Status | Description
 ```
 
 </details>
-
-### PlayerStatus Object
-
-```js
-{
-  "palette": NotePalette
-}
-```
 
 #### NotePalette Object
 
