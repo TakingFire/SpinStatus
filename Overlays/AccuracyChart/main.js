@@ -14,12 +14,12 @@ function onOpen() {
 function onMessage(e) {
   const event = JSON.parse(e.data);
 
-  switch (event["type"]) {
+  switch (event.type) {
     case "noteEvent":
-      handleNoteEvent(event["status"]);
+      handleNoteEvent(event.status);
       break;
     case "trackStart":
-      handleTrackStart(event["status"]);
+      handleTrackStart(event.status);
       break;
     case "trackComplete":
     case "trackFail":
@@ -44,17 +44,17 @@ function onError() {
 }
 
 function handleNoteEvent(event) {
-  if (event["timing"] == 0) {
-    if (event["accuracy"] == "Failed") {
-      event["timing"] = 100 / 1000;
+  if (event.timing == 0) {
+    if (event.accuracy == "Failed") {
+      event.timing = 100 / 1000;
     } else return;
   }
   noteGraph.drawNote(event);
   timeGraph.drawNote(event);
-  timingHistory.push(event["timing"]);
+  timingHistory.push(event.timing);
 
-  if (event["timing"] < 0) earlyAvg.add(event["timing"]);
-  if (event["timing"] > 0) lateAvg.add(event["timing"]);
+  if (event.timing < 0) earlyAvg.add(event.timing);
+  if (event.timing > 0) lateAvg.add(event.timing);
 
   const $earlyAvg = document.getElementById("early-avg-val");
   const $lateAvg = document.getElementById("late-avg-val");
@@ -76,8 +76,8 @@ function handleNoteEvent(event) {
 }
 
 function handleTrackStart(event) {
-  trackClock.startTime = event["startTime"];
-  trackClock.endTime = event["endTime"];
+  trackClock.startTime = event.startTime;
+  trackClock.endTime = event.endTime;
   trackClock.start();
   noteGraph.clear();
   timeGraph.clear();
@@ -199,15 +199,15 @@ class NoteGraph extends Graph {
   }
 
   drawNote(event) {
-    let factor = event["timing"] / 0.105;
+    let factor = event.timing / 0.105;
     if (globalConfig.magnified) factor = signedCurve(factor);
-    const x = this.width / 2 - (this.width / 9) * event["lane"];
+    const x = this.width / 2 - (this.width / 9) * event.lane;
     const y = this.height / 2 + (this.height / 2) * factor;
 
     this.ctx.beginPath();
     this.ctx.globalAlpha = 0.1;
     this.ctx.fillStyle = globalConfig.coloredNotes
-      ? Graph.getTimingColor(event["timing"])
+      ? Graph.getTimingColor(event.timing)
       : "#fff";
     this.ctx.roundRect(x - this.width / 18, y - 2, this.width / 9, 4, 2);
     this.ctx.fill();
@@ -271,7 +271,7 @@ class TimeGraph extends Graph {
   drawNote(event) {
     const position =
       trackClock.currentTime / (trackClock.endTime - trackClock.startTime);
-    let factor = event["timing"] / 0.105;
+    let factor = event.timing / 0.105;
     if (globalConfig.magnified) factor = signedCurve(factor);
     const x = this.width * position;
     const y = this.height / 2 + (this.height / 2) * factor;
@@ -279,7 +279,7 @@ class TimeGraph extends Graph {
     this.ctx.beginPath();
     this.ctx.globalAlpha = 0.1;
     this.ctx.fillStyle = globalConfig.coloredNotes
-      ? Graph.getTimingColor(event["timing"])
+      ? Graph.getTimingColor(event.timing)
       : "#fff";
     this.ctx.roundRect(x - 2, y - 2, 4, 4, 2);
     this.ctx.fill();
