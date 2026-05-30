@@ -46,6 +46,8 @@ namespace SpinStatus.Patches
         [HarmonyPatch(typeof(TrackGameplayLogic), nameof(TrackGameplayLogic.UpdateNoteState))]
         private static void ScoreEventPost(this PlayState playState, int noteIndex, ref TempNoteState __state)
         {
+            if (!Config.EventNote.Value && !Config.EventScore.Value) { return; }
+
             ScoreState scoreState = playState.scoreState;
             ref NoteState noteState = ref scoreState.GetNoteState(noteIndex);
 
@@ -61,14 +63,14 @@ namespace SpinStatus.Patches
 
             float currentTime = playState.currentTrackTime;
 
-            if (becameDoneWith || isSustained)
+            if (Config.EventScore.Value && (becameDoneWith || isSustained))
             {
                 if (currentTime < previousScoreEventTime ||
                     currentTime - previousScoreEventTime > scoreEventInterval)
                 {
                     previousScoreEventTime = currentTime;
 
-                    var scoreEvent = new Model.Event
+                    Model.Event scoreEvent = new()
                     {
                         Type = Model.EventType.ScoreEvent,
                         Player = playState.playerIndex,
@@ -86,10 +88,11 @@ namespace SpinStatus.Patches
                         }
                     };
 
-                    Server.Socket.SendMessage(scoreEvent);
+                    Server.SendMessage(scoreEvent);
                 }
             }
 
+            if (!Config.EventNote.Value) { return; }
             if (!becameDoneWith && !becameSustained) { return; }
 
             if (note.NoteType == NoteType.SectionContinuationOrEnd ||
@@ -102,7 +105,7 @@ namespace SpinStatus.Patches
             else if (!isSustained && note.NoteType == NoteType.DrumStart) noteType = "Drum";
             else noteType = note.NoteType.ToString();
 
-            var noteEvent = new Model.Event
+            Model.Event noteEvent = new()
             {
                 Type = Model.EventType.NoteEvent,
                 Player = playState.playerIndex,
@@ -117,7 +120,7 @@ namespace SpinStatus.Patches
                 }
             };
 
-            Server.Socket.SendMessage(noteEvent);
+            Server.SendMessage(noteEvent);
         }
     }
 
@@ -129,11 +132,13 @@ namespace SpinStatus.Patches
         [HarmonyPatch(typeof(Track), nameof(Track.PlayTrack))]
         private static void TrackStart()
         {
+            if (!Config.EventTrackStart.Value) { return; }
+
             TrackDataSegment trackDataSegment = Track.PlayStates[0].trackData.GetFirstSegment();
             TrackInfoMetadata trackMeta = trackDataSegment.GetTrackInfoMetadata();
             TrackInfoAssetReference assetInfo = trackDataSegment.metadata.TrackInfoRef;
 
-            var trackEvent = new Model.Event
+            Model.Event trackEvent = new()
             {
                 Type = Model.EventType.TrackStart,
                 Status = new TrackStatus
@@ -143,6 +148,7 @@ namespace SpinStatus.Patches
                     Artist = trackMeta.artistName,
                     Feat = trackMeta.featArtists,
                     Charter = trackMeta.charter,
+                    AlbumArt = string.Empty,
 
                     StartTime = Track.PlayStates[0].startTrackTime,
                     EndTime = Track.PlayStates[0].trackData.GameplayEndTick.ToSecondsFloat(),
@@ -154,11 +160,11 @@ namespace SpinStatus.Patches
                 }
             };
 
-            var trackStatus = (TrackStatus)trackEvent.Status;
+            TrackStatus trackStatus = (TrackStatus)trackEvent.Status;
 
             List<ActivePlayer> players = GameSystemSingletonNoSetting<LocalMultiplayerSystem>.Instance.ActivePlayers;
 
-            for (var i = 0; i < players.Count; i++)
+            for (int i = 0; i < players.Count; i++)
             {
                 PlayState playState = Track.PlayStates[i];
                 PlayableTrackData trackData = playState.Handle.GetDataForPlayerIndex(i);
@@ -178,13 +184,19 @@ namespace SpinStatus.Patches
                 ColorSystem colorSystem = GameSystemSingleton<ColorSystem, ColorSystemSettings>.Instance;
                 ColorSystem.NoteColorProfile colorProfile = colorSystem.GetNoteColorProfile(playState.GetNoteColorProfile());
 
-                for (var j = 1; j < 8; j++)
+                for (int j = 1; j < 8; j++)
                 {
                     Color color = colorProfile.GetBlender((NoteColorType)j).colorBlend.baseColor;
                     playerStatus.Palette.Add((NoteColorType)j, "#" + ColorUtility.ToHtmlStringRGB(color));
                 }
 
                 trackStatus.Players.Add(playerStatus);
+            }
+
+            if (!Config.SendImageData.Value)
+            {
+                Server.SendMessage(trackEvent);
+                return;
             }
 
             AssetLoadingSystem instance = GameSystemSingletonNoSetting<AssetLoadingSystem>.Instance;
@@ -229,47 +241,57 @@ namespace SpinStatus.Patches
                 trackEvent.Status = trackStatus;
             }
 
-            Server.Socket.SendMessage(trackEvent);
+            Server.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.StopTrack))]
         private static void TrackEnd()
         {
-            var trackEvent = new Model.Event { Type = Model.EventType.TrackEnd };
-            Server.Socket.SendMessage(trackEvent);
+            if (!Config.EventTrackEnd.Value) { return; }
+
+            Model.Event trackEvent = new() { Type = Model.EventType.TrackEnd };
+            Server.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.HandlePauseGame))]
         private static void TrackPause()
         {
-            var trackEvent = new Model.Event { Type = Model.EventType.TrackPause };
-            Server.Socket.SendMessage(trackEvent);
+            if (!Config.EventTrackPause.Value) { return; }
+
+            Model.Event trackEvent = new() { Type = Model.EventType.TrackPause };
+            Server.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.HandleUnpauseGame))]
         private static void TrackResume()
         {
-            var trackEvent = new Model.Event { Type = Model.EventType.TrackResume };
-            Server.Socket.SendMessage(trackEvent);
+            if (!Config.EventTrackResume.Value) { return; }
+
+            Model.Event trackEvent = new() { Type = Model.EventType.TrackResume };
+            Server.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.CompleteSong))]
         private static void TrackComplete()
         {
-            var trackEvent = new Model.Event { Type = Model.EventType.TrackComplete };
-            Server.Socket.SendMessage(trackEvent);
+            if (!Config.EventTrackComplete.Value) { return; }
+
+            Model.Event trackEvent = new() { Type = Model.EventType.TrackComplete };
+            Server.SendMessage(trackEvent);
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Track), nameof(Track.FailSong))]
         private static void TrackFail()
         {
-            var trackEvent = new Model.Event { Type = Model.EventType.TrackFail };
-            Server.Socket.SendMessage(trackEvent);
+            if (!Config.EventTrackFail.Value) { return; }
+
+            Model.Event trackEvent = new() { Type = Model.EventType.TrackFail };
+            Server.SendMessage(trackEvent);
         }
     }
 }

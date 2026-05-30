@@ -6,10 +6,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
 
-namespace SpinStatus.Server
+namespace SpinStatus
 {
-    internal class Socket(int port) : WebSocketServer($"ws://0.0.0.0:{port}")
+    internal static class Server
     {
+        private static WebSocketServer _server;
         private static readonly List<IWebSocketConnection> _instances = [];
         private static readonly JsonSerializerSettings _jsonSettings = new()
         {
@@ -17,32 +18,42 @@ namespace SpinStatus.Server
             Converters = [new StringEnumConverter(new CamelCaseNamingStrategy())]
         };
 
-        public void Start()
+        public static void Start(int port)
         {
+            if (_server != null) { return; }
             FleckLog.Level = LogLevel.Error;
-            base.Start(socket =>
-            {
-                socket.OnOpen = () =>
-                {
-                    _instances.Add(socket);
 
-                    socket.Send(JsonConvert.SerializeObject(new Event
+            _server = new WebSocketServer($"ws://0.0.0.0:{port}");
+
+            _server.Start(instance =>
+            {
+                instance.OnOpen = () =>
+                {
+                    _instances.Add(instance);
+
+                    instance.Send(JsonConvert.SerializeObject(new Event
                     {
-                        Type = Model.EventType.Hello
+                        Type = EventType.Hello
                     }, _jsonSettings));
                 };
 
-                socket.OnClose = () => _instances.Remove(socket);
+                instance.OnClose = () => _instances.Remove(instance);
             });
+
+            Plugin.Logger.LogInfo($"Server started on port {port}");
         }
 
-        public void Stop()
+        public static void Stop()
         {
+            Plugin.Logger.LogInfo($"Server shutting down");
+
+            if (_server == null) { return; }
             foreach (var instance in _instances)
             {
                 instance.Close();
             }
-            base.Dispose();
+            _server.Dispose();
+            _server = null;
         }
 
         public static void SendMessage(Event evt)

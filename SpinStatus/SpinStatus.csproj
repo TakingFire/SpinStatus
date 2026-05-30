@@ -17,7 +17,6 @@
         https://nuget.bepinex.dev/v3/index.json;
         https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-    <RootNamespace>xyz.bacur</RootNamespace>
 </PropertyGroup>
 
 <PropertyGroup>
@@ -42,8 +41,17 @@
     <Reference Include="SSD.Game">
         <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
     </Reference>
+    <Reference Include="SSD.Types">
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\SSD.Types.dll</HintPath>
+    </Reference>
     <Reference Include="Spin.Game.TrackPlaybackSystem">
         <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="SpinCore">
         <HintPath>$(PluginsDir)\SpinCore\SpinCore.dll</HintPath>
@@ -51,6 +59,10 @@
     <Reference Include="Newtonsoft.Json">
         <HintPath>$(PluginsDir)\SpinCore\Newtonsoft.Json.dll</HintPath>
     </Reference>
+</ItemGroup>
+
+<ItemGroup>
+    <EmbeddedResource Include="locale.json" />
 </ItemGroup>
 
 <Target Name="MoveToBepInEx" AfterTargets="Build">

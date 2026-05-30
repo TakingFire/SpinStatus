@@ -19,7 +19,7 @@ const ws = new WebSocket("ws://localhost:38304/");
 
 Every message sent by the server follows this format.\
 `type` indicates the event that was triggered, which may or may not contain a relevant `status` object. (More information below)\
-Additionally, some events may have an associated `player` index. This corresponds with the `players` send by `trackStart`.
+Additionally, some events may have an associated `player` index. This corresponds with the `players` sent by `trackStart`.
 
 ```js
   {
