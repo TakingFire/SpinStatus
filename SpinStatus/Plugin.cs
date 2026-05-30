@@ -12,7 +12,7 @@ namespace SpinStatus
     {
         public const string Guid = "xyz.bacur.plugins.spinstatus";
         public const string Name = "SpinStatus";
-        public const string Version = "0.4.1";
+        public const string Version = "0.5.0";
 
         internal static new ManualLogSource Logger;
         internal static Harmony Patcher;
