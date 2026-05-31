@@ -9,13 +9,13 @@
     "en": "Server Enabled"
   },
   "SpinStatus_Menu_General_Port": {
-    "en": "Server Port (Default: 38304)"
+    "en": "Server Port"
   },
   "SpinStatus_Menu_General_SendImage": {
     "en": "Send Image Data"
   },
   "SpinStatus_Menu_Events_Header": {
-    "en": "Event Types"
+    "en": "Event Messages"
   },
   "SpinStatus_Menu_Events_Note": {
     "en": "Note Hit/Missed"
