@@ -1,44 +1,49 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using WebSocketSharp;
-using WebSocketSharp.Server;
+using SpinCore;
 
-namespace SpinStatus;
-
-[BepInProcess("SpinRhythm.exe")]
-[BepInPlugin(Guid, Name, Version)]
-public class Plugin : BaseUnityPlugin
+namespace SpinStatus
 {
-    public const string Guid = "xyz.bacur.plugins.spinstatus";
-    public const string Name = "SpinStatus";
-    public const string Version = "0.4.1";
-
-
-    internal static new ManualLogSource Logger;
-    private static Harmony _harmony;
-
-    public static HttpServer server;
-    public static int port = 38304;
-
-    private void Awake()
+    [BepInProcess("SpinRhythm.exe")]
+    [BepInPlugin(Guid, Name, Version)]
+    [BepInDependency(SpinCorePlugin.Guid, SpinCorePlugin.Version)]
+    public class Plugin : BaseUnityPlugin
     {
-        Logger = base.Logger;
+        public const string Guid = "xyz.bacur.plugins.spinstatus";
+        public const string Name = "SpinStatus";
+        public const string Version = "0.5.0";
 
-        server = new HttpServer(port);
-        server.AddWebSocketService<Server.ServerBehavior>("/");
-        server.Start();
+        internal static new ManualLogSource Logger;
+        internal static Harmony Patcher;
 
-        Logger.LogInfo($"Server started on port {port}");
+        protected void Awake()
+        {
+            Logger = base.Logger;
+            Patcher = new Harmony(Guid);
+            SpinStatus.Config.Init(Config);
+            Menu.Create();
 
-        _harmony = new Harmony(Guid);
-        _harmony.PatchAll(typeof(Patches.NoteEventHandler));
-        _harmony.PatchAll(typeof(Patches.SceneEventHandler));
-    }
+            Start();
+        }
 
-    private void OnDestroy()
-    {
-        server.Stop();
-        _harmony.UnpatchSelf();
+        protected void OnDestroy()
+        {
+            Stop();
+        }
+
+        internal static void Start()
+        {
+            Server.Start(SpinStatus.Config.ServerPort.Value);
+
+            Patcher.PatchAll(typeof(Patches.NoteEventHandler));
+            Patcher.PatchAll(typeof(Patches.SceneEventHandler));
+        }
+
+        internal static void Stop()
+        {
+            Server.Stop();
+            Patcher?.UnpatchSelf();
+        }
     }
 }

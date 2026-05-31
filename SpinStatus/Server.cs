@@ -1,34 +1,67 @@
 using System.Collections.Generic;
-using WebSocketSharp;
-using WebSocketSharp.Server;
-using SimpleJSON;
+using SpinStatus.Model;
+using Fleck;
 
-namespace SpinStatus.Server
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Converters;
+
+namespace SpinStatus
 {
-    public class ServerBehavior : WebSocketBehavior
+    internal static class Server
     {
-        private static List<ServerBehavior> _instances = new List<ServerBehavior>();
-
-        protected override void OnOpen()
+        private static WebSocketServer _server;
+        private static readonly List<IWebSocketConnection> _instances = [];
+        private static readonly JsonSerializerSettings _jsonSettings = new()
         {
-            base.OnOpen();
-            _instances.Add(this);
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = [new StringEnumConverter(new CamelCaseNamingStrategy())]
+        };
 
-            var eventJSON = new JSONObject();
-            eventJSON["type"] = "hello";
+        public static void Start(int port)
+        {
+            if (_server != null) { return; }
+            FleckLog.Level = LogLevel.Error;
 
-            this.SendAsync(eventJSON.ToString(), null);
+            _server = new WebSocketServer($"ws://0.0.0.0:{port}");
+
+            _server.Start(instance =>
+            {
+                instance.OnOpen = () =>
+                {
+                    _instances.Add(instance);
+
+                    instance.Send(JsonConvert.SerializeObject(new Event
+                    {
+                        Type = EventType.Hello
+                    }, _jsonSettings));
+                };
+
+                instance.OnClose = () => _instances.Remove(instance);
+            });
+
+            Plugin.Logger.LogInfo($"Server started on port {port}");
         }
 
-        protected override void OnClose(CloseEventArgs e)
+        public static void Stop()
         {
-            _instances.Remove(this);
-            base.OnClose(e);
+            Plugin.Logger.LogInfo($"Server shutting down");
+
+            if (_server == null) { return; }
+            foreach (var instance in _instances)
+            {
+                instance.Close();
+            }
+            _server.Dispose();
+            _server = null;
         }
 
-        public static void SendMessage(JSONObject json) {
-            foreach (var instance in _instances) {
-                instance.SendAsync(json.ToString(), null);
+        public static void SendMessage(Event evt)
+        {
+            string json = JsonConvert.SerializeObject(evt, _jsonSettings);
+            foreach (var instance in _instances)
+            {
+                instance.Send(json);
             }
         }
     }

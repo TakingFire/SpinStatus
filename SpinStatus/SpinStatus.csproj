@@ -9,7 +9,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>SpinStatus</AssemblyName>
     <Product>SpinStatus</Product>
-    <Version>0.4.1</Version>
+    <Version>0.5.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -17,8 +17,14 @@
         https://nuget.bepinex.dev/v3/index.json;
         https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-    <RootNamespace>xyz.bacur</RootNamespace>
-    <BaseGameDir>D:\Steam\steamapps\common\Spin Rhythm</BaseGameDir>
+</PropertyGroup>
+
+<PropertyGroup>
+    <BaseGameDir Condition="Exists('..\..\SpinRhythm_Data')">..\..</BaseGameDir>
+    <BaseGameDir Condition="Exists('D:\SteamLibrary\steamapps\common\Spin Rhythm')">D:\SteamLibrary\steamapps\common\Spin Rhythm</BaseGameDir>
+    <BaseGameDir Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Spin Rhythm')">C:\Program Files (x86)\Steam\steamapps\common\Spin Rhythm</BaseGameDir>
+    <PluginsDir>$(BaseGameDir)\BepInEx\plugins</PluginsDir>
+    <ScriptsDir>$(BaseGameDir)\BepInEx\scripts</ScriptsDir>
 </PropertyGroup>
 
 <ItemGroup>
@@ -30,24 +36,44 @@
 
 <ItemGroup>
     <Reference Include="Assembly-CSharp" Publicize="true">
-        <HintPath Condition="Exists('..\..\SpinRhythm_Data')">..\..\SpinRhythm_Data\Managed\Assembly-CSharp.dll</HintPath>
-        <HintPath Condition="Exists('$(BaseGameDir)\SpinRhythm_Data')">$(BaseGameDir)\SpinRhythm_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="SSD.Game">
-        <HintPath Condition="Exists('..\..\SpinRhythm_Data')">..\..\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
-        <HintPath Condition="Exists('$(BaseGameDir)\SpinRhythm_Data')">$(BaseGameDir)\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\SSD.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="SSD.Types">
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\SSD.Types.dll</HintPath>
     </Reference>
     <Reference Include="Spin.Game.TrackPlaybackSystem">
-        <HintPath Condition="Exists('..\..\SpinRhythm_Data')">..\..\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
-        <HintPath Condition="Exists('$(BaseGameDir)\SpinRhythm_Data')">$(BaseGameDir)\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Spin.Game.TrackPlaybackSystem.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro">
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+        <HintPath>$(BaseGameDir)\SpinRhythm_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="SpinCore">
+        <HintPath>$(PluginsDir)\SpinCore\SpinCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+        <HintPath>$(PluginsDir)\SpinCore\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+</ItemGroup>
+
+<ItemGroup>
+    <EmbeddedResource Include="locale.json" />
 </ItemGroup>
 
 <Target Name="MoveToBepInEx" AfterTargets="Build">
     <Copy
         SourceFiles="$(TargetPath);$(TargetDir)$(TargetName).pdb"
-        DestinationFolder="..\..\BepInEx\scripts"
-        Condition="Exists('..\..\BepInEx\scripts')" />
+        DestinationFolder="$(ScriptsDir)"
+        Condition="Exists('$(ScriptsDir)')" />
+    <Copy
+        SourceFiles="$(TargetPath);"
+        DestinationFolder="$(PluginsDir)"
+        Condition="Exists('$(PluginsDir)') And !Exists('$(ScriptsDir)')" />
 </Target>
 
 <ItemGroup Condition = "'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

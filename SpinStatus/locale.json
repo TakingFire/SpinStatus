@@ -1,0 +1,47 @@
+{
+  "SpinStatus_Menu_MenuName": {
+    "en": "SpinStatus"
+  },
+  "SpinStatus_Menu_General_Header": {
+    "en": "General Settings"
+  },
+  "SpinStatus_Menu_General_Enabled": {
+    "en": "Server Enabled"
+  },
+  "SpinStatus_Menu_General_Port": {
+    "en": "Server Port"
+  },
+  "SpinStatus_Menu_General_SendImage": {
+    "en": "Send Image Data"
+  },
+  "SpinStatus_Menu_Events_Header": {
+    "en": "Event Messages"
+  },
+  "SpinStatus_Menu_Events_Note": {
+    "en": "Note Hit/Missed"
+  },
+  "SpinStatus_Menu_Events_Score": {
+    "en": "Score Changed"
+  },
+  "SpinStatus_Menu_Events_TrackStart": {
+    "en": "Track Started"
+  },
+  "SpinStatus_Menu_Events_TrackEnd": {
+    "en": "Track Ended"
+  },
+  "SpinStatus_Menu_Events_TrackComplete": {
+    "en": "Track Completed"
+  },
+  "SpinStatus_Menu_Events_TrackFail": {
+    "en": "Track Failed"
+  },
+  "SpinStatus_Menu_Events_TrackPause": {
+    "en": "Track Paused"
+  },
+  "SpinStatus_Menu_Events_TrackResume": {
+    "en": "Track Resumed"
+  },
+  "SpinStatus_Menu_Button_Reset": {
+    "en": "Reset to Defaults"
+  }
+}

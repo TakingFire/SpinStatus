@@ -22,15 +22,15 @@ function onOpen() {
 function onMessage(e) {
   const event = JSON.parse(e.data);
 
-  switch (event["type"]) {
+  switch (event.type) {
     case "noteEvent":
-      handleNoteEvent(event["status"]);
+      handleNoteEvent(event.status);
       break;
     case "scoreEvent":
-      handleScoreEvent(event["status"]);
+      handleScoreEvent(event.status);
       break;
     case "trackStart":
-      handleTrackStart(event["status"]);
+      handleTrackStart(event.status);
       break;
     case "trackEnd":
       handleTrackEnd(event);
@@ -66,13 +66,13 @@ function onError() {
 function handleNoteEvent(event) {
   if (
     globalConfig.showAccuracyLog &&
-    !["Valid", "Pending"].includes(event["accuracy"]) &&
-    !["HoldEnd", "DrumEnd"].includes(event["type"])
+    !["Valid", "Pending"].includes(event.accuracy) &&
+    !["HoldEnd", "DrumEnd"].includes(event.type)
   ) {
-    accuracyLog.insert(event["accuracy"]);
+    accuracyLog.insert(event.accuracy);
   }
 
-  if (globalConfig.showComboCounter && event["type"] == "Failed") {
+  if (globalConfig.showComboCounter && event.type == "Failed") {
     animate("#combo", {
       x: [0, -5, 5, 0],
       filter: [
@@ -87,9 +87,9 @@ function handleNoteEvent(event) {
 
   if (globalConfig.showScoreCounter && globalConfig.flashScoreCounter) {
     const [$counter] = utils.$("#counter");
-    if (["ScratchStart", "DrumStart", "Drum"].includes(event["type"])) return;
+    if (["ScratchStart", "DrumStart", "Drum"].includes(event.type)) return;
 
-    const filter = event["color"]
+    const filter = event.color
       ? "filter: hue-rotate(-120deg)"
       : "hue-rotate(140deg)";
 
@@ -102,15 +102,15 @@ function handleNoteEvent(event) {
 
 function handleScoreEvent(event) {
   if (globalConfig.showScoreCounter) {
-    scoreCounter.setValue(event["score"]);
+    scoreCounter.setValue(event.score);
   }
   if (globalConfig.showComboCounter) {
-    const combo = String(event["combo"]).padStart(3, "0");
+    const combo = String(event.combo).padStart(3, "0");
     utils.$("#combo-number")[0].textContent = combo;
 
     [$comboType] = utils.$("#combo-type");
 
-    switch (event["fullCombo"]) {
+    switch (event.fullCombo) {
       case "PerfectPlus":
       case "Perfect":
         $comboType.textContent = "PFC";
@@ -132,14 +132,11 @@ function handleSongEvent(event) {
   const [$title] = utils.$("#title");
   const [$artist] = utils.$("#artist");
   const [$charter] = utils.$("#charter");
-  $title.textContent = event["title"];
-  $artist.textContent = event["artist"];
+  $title.textContent = event.title;
+  $artist.textContent = event.artist;
 
-  if (
-    event["charter"] &&
-    (event["difficulty"] == "RemiXD" || event["isCustom"])
-  ) {
-    $charter.textContent = "Chart by " + event["charter"];
+  if (event.charter && (event.difficulty == "RemiXD" || event.isCustom)) {
+    $charter.textContent = "Chart by " + event.charter;
   } else {
     utils.$("#charter")[0].textContent = "";
   }
@@ -168,8 +165,8 @@ function handleTrackStart(event) {
     const opacity = utils.get(":root", "--album-art-opacity", false);
     const [$cover] = utils.$("#cover");
     $cover.data = "";
-    if (event["albumArt"]) {
-      $cover.data = "data:image/png;base64," + event["albumArt"];
+    if (event.albumArt) {
+      $cover.data = "data:image/png;base64," + event.albumArt;
 
       animate($cover, {
         opacity: [0, opacity],
